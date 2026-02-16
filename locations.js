@@ -522,7 +522,7 @@ const defaultLocations = [
         "lat": 34.1035,
         "lng": -117.6534,
         "addr": "999 San Bernardino Rd, Upland, CA 91786",
-        "cat": "Medical",
+        "cat": "Admin",
         "open": "00:00", 
         "close": "23:59",
         "services": ["Emergency", "Surgery", "Inpatient Care"]
@@ -541,10 +541,9 @@ const defaultLocations = [
     {
         "name": "Ingram Micro",
         "company": "Pickup/Deliveries",
-        "lat": 33.9745,
-        "lng": -117.5583,
+        "lat": 34.009456,
+        "lng": -117.554215,
         "addr": "12510 Micro Dr, Eastvale, CA 91752",
-        "cat": "Admin",
         "open": "08:30",
         "close": "17:30",
         "services": ["Technology Solutions", "Logistics", "Distribution"]
