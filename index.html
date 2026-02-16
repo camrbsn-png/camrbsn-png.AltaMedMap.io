@@ -1,19 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="icon" type="image/svg+xml" href="icon.svg">
-    <link rel="apple-touch-icon" href="icon.svg">
 
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="LexiGlobal">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<link rel="apple-touch-icon" href="icon.svg">
 
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="LexiGlobal">
+
+<style>
+    :root {
+        --sat: env(safe-area-inset-top);
+        --sar: env(safe-area-inset-right);
+        --sab: env(safe-area-inset-bottom);
+        --sal: env(safe-area-inset-left);
+    }
+</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>LexiGlobal Directory</title>
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
     <style>
-        :root {
-            --sat: env(safe-area-inset-top);
-            --sar: env(safe-area-inset-right);
-            --sab: env(safe-area-inset-bottom);
-            --sal: env(safe-area-inset-left);
+        :root { 
             --lexi-blue: #0984e3;
             --lexi-turquoise: #1abc9c; 
             --pace-purple: #9b59b6;
@@ -22,58 +33,59 @@
             --hospital-red: #e74c3c;
         }
         
-        html, body { 
-            height: 100%; 
-            height: 100dvh; 
-            width: 100%; 
-            margin: 0; 
-            padding: 0; 
-            overflow: hidden; 
-            position: fixed; 
-        }
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-            display: flex; 
-            flex-direction: row; 
-        }
-        
-        #sidebar { width: 350px; min-width: 350px; background: #fff; z-index: 9999; display: flex; flex-direction: column; box-shadow: 2px 0 15px rgba(0,0,0,0.1); transition: transform 0.3s ease; }
-        #map-container { flex-grow: 1; position: relative; height: 100%; overflow: hidden; }
-        #map { height: 100%; width: 100%; background: #f0f0f0; }
+    html, body { 
+        height: 100%; 
+        height: 100dvh; 
+        width: 100%; 
+        margin: 0; 
+        padding: 0; 
+        overflow: hidden; 
+        position: fixed; 
+    }
+    body { 
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+        display: flex; 
+        flex-direction: row; 
+    }
+    
+    #sidebar { width: 350px; min-width: 350px; background: #fff; z-index: 9999; display: flex; flex-direction: column; box-shadow: 2px 0 15px rgba(0,0,0,0.1); transition: transform 0.3s ease; }
+    #map-container { flex-grow: 1; position: relative; height: 100%; }
+    #map { height: 100%; width: 100%; background: #f0f0f0; }
 
-        @media (max-width: 1024px) {
-            #sidebar { position: absolute; left: 0; top: 0; height: 100%; width: 85%; max-width: 320px; transform: translateX(0); }
-            #sidebar.closed { transform: translateX(-100%); }
-        }
+    @media (max-width: 1024px) {
+        #sidebar { position: absolute; left: 0; top: 0; height: 100%; width: 85%; max-width: 320px; transform: translateX(0); }
+        #sidebar.closed { transform: translateX(-100%); }
+    }
 
-        #filter-section { padding: 15px; background: #f8f9fa; border-bottom: 1px solid #eee; }
-        .filter-row { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 8px; }
-        .filter-chip { display: flex; align-items: center; gap: 4px; font-size: 0.75rem; cursor: pointer; background: white; padding: 6px 10px; border-radius: 20px; border: 1px solid #ddd; }
-        .filter-chip:has(input:checked) { background: var(--lexi-blue); color: white; border-color: var(--lexi-blue); }
-        .filter-chip input { display: none; }
+    #filter-section { padding: 15px; background: #f8f9fa; border-bottom: 1px solid #eee; }
+    .filter-row { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 8px; }
+    .filter-chip { display: flex; align-items: center; gap: 4px; font-size: 0.75rem; cursor: pointer; background: white; padding: 6px 10px; border-radius: 20px; border: 1px solid #ddd; }
+    .filter-chip:has(input:checked) { background: var(--lexi-blue); color: white; border-color: var(--lexi-blue); }
+    .filter-chip input { display: none; }
 
-        #search-sticky-section { padding: 15px; background: white; border-bottom: 1px solid #eee; }
-        .search-box { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; box-sizing: border-box; }
+    #search-sticky-section { padding: 15px; background: white; border-bottom: 1px solid #eee; }
+    .search-box { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; box-sizing: border-box; }
 
-        .content { overflow-y: auto; flex-grow: 1; display: none; }
-        .list-item { padding: 16px; border-bottom: 1px solid #f0f0f0; cursor: pointer; position: relative; }
-        .list-item:hover { background: #f8f9fb; border-left: 4px solid var(--lexi-blue); }
+    .content { overflow-y: auto; flex-grow: 1; display: none; }
+    .list-item { padding: 16px; border-bottom: 1px solid #f0f0f0; cursor: pointer; }
+    .list-item:hover { background: #f8f9fb; border-left: 4px solid var(--lexi-blue); }
 
-        .custom-pin { display: flex; align-items: center; justify-content: center; border-radius: 50% 50% 50% 0; border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3); color: white; width: 35px; height: 35px; transform: rotate(-45deg); }
-        .pin-content { transform: rotate(45deg); font-size: 1.2rem; }
+    .custom-pin { display: flex; align-items: center; justify-content: center; border-radius: 50% 50% 50% 0; border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3); color: white; width: 35px; height: 35px; transform: rotate(-45deg); }
+    .pin-content { transform: rotate(45deg); font-size: 1.2rem; }
 
-        #control-panel { 
-            position: absolute; 
-            bottom: 15px; 
-            right: 15px; 
-            z-index: 8000; 
-            display: flex; 
-            flex-direction: column; 
-            gap: 10px; 
-            padding-bottom: env(safe-area-inset-bottom); 
-        }
-        .btn { padding: 14px; border: none; border-radius: 12px; font-weight: 700; color: white; box-shadow: 0 6px 15px rgba(0,0,0,0.3); width: 140px; cursor: pointer; }
-    </style>
+    /* FIXED: Positioned slightly higher and added safe-area-inset */
+    #control-panel { 
+        position: absolute; 
+        bottom: 15px; /* Base lift from the bottom */
+        right: 15px; 
+        z-index: 8000; 
+        display: flex; 
+        flex-direction: column; 
+        gap: 10px; 
+        padding-bottom: env(safe-area-inset-bottom); /* Specifically for iPhone home bar */
+    }
+    .btn { padding: 14px; border: none; border-radius: 12px; font-weight: 700; color: white; box-shadow: 0 6px 15px rgba(0,0,0,0.3); width: 140px; cursor: pointer; }
+</style>
 </head>
 <body>
 
@@ -127,37 +139,18 @@
 <script>
     let markers = [];
     let userLatLng = null;
-
-    // Use CartoDB tiles for more reliable loading
-    const streetLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-        attribution: '©OpenStreetMap',
-        maxZoom: 19
-    });
-    
-    const satLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-        attribution: '©Esri'
-    });
-
-    const map = L.map('map', { 
-        zoomControl: false, 
-        layers: [streetLayer],
-        trackResize: true 
-    }).setView([34.0522, -118.2437], 10);
-
-    // CRITICAL FIX: Ensure tiles reload when window is resized or sidebar toggled
-    window.addEventListener('resize', () => { map.invalidateSize(); });
+    const streetLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png');
+    const satLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}');
+    const map = L.map('map', { zoomControl: false, layers: [streetLayer] }).setView([34.0522, -118.2437], 10);
 
     map.on('mousedown', function() {
         if (window.innerWidth <= 1024) {
             document.getElementById('sidebar').classList.add('closed');
-            setTimeout(() => { map.invalidateSize(); }, 300);
         }
     });
 
     function toggleSidebar() {
         document.getElementById('sidebar').classList.toggle('closed');
-        // Force map tile recalculation after sidebar animation
-        setTimeout(() => { map.invalidateSize(); }, 350);
     }
 
     function getCustomIcon(loc) {
@@ -194,8 +187,8 @@
         const closeVal = closeH * 100 + closeM;
         const isOpen = currentTime >= openVal && currentTime < closeVal;
         return isOpen ? 
-            `<span style="color:var(--lexi-turquoise); font-weight:bold;">● Open</span>` : 
-            `<span style="color:var(--hospital-red); font-weight:bold;">○ Closed</span>`;
+            `<span style="color:var(--lexi-turquoise); font-weight:bold;">● Open</span> <span style="font-size:0.8em; color:#666;">(Closes ${closeTime})</span>` : 
+            `<span style="color:var(--hospital-red); font-weight:bold;">○ Closed</span> <span style="font-size:0.8em; color:#666;">(Opens ${openTime})</span>`;
     }
 
     function updateMap() {
@@ -203,7 +196,6 @@
         markers = [];
         const listContainer = document.getElementById('location-list');
         listContainer.innerHTML = '';
-        
         const searchQuery = document.getElementById('site-search').value.toLowerCase();
         const checkedCompanies = Array.from(document.querySelectorAll('.company-filter:checked')).map(cb => cb.value);
         const checkedCats = Array.from(document.querySelectorAll('.cat-filter:checked')).map(cb => cb.value);
@@ -224,33 +216,36 @@
         filtered.forEach(loc => {
             const statusHtml = getOpenStatus(loc.open, loc.close);
             const dist = userLatLng ? (map.distance(userLatLng, [loc.lat, loc.lng]) * 0.000621371).toFixed(1) + " mi" : "";
-            
+            const servicesText = loc.services ? loc.services.join(', ') : '';
+
+            // 1. Map Marker & Popup
             const m = L.marker([loc.lat, loc.lng], { icon: getCustomIcon(loc) }).addTo(map);
             
-            // CLEANED URL: Standardized Google Maps link
-            const mapLink = `https://www.google.com/maps/dir/?api=1&destination=${loc.lat},${loc.lng}`;
-
             m.bindPopup(`
-                <div style="font-family: sans-serif; min-width:200px;">
+                <div style="font-family: sans-serif; min-width:200px; padding:5px;">
                     <strong style="font-size:1.1em; color:var(--lexi-blue);">${loc.name}</strong><br>
-                    <div style="font-size:0.85em; font-weight:bold; color:#444; margin:4px 0;">${loc.cat}</div>
+                    <div style="font-size:0.85em; font-weight:bold; color:#444; margin-bottom:4px;">${loc.cat} ${servicesText ? '• ' + servicesText : ''}</div>
                     <div style="margin: 4px 0;">${statusHtml}</div>
                     <div style="color:#666; margin-bottom:8px; font-size:0.9em;">${loc.addr}</div>
-                    <a href="${mapLink}" target="_blank" 
-                       style="display:block; text-align:center; background:var(--lexi-blue); color:white; padding:10px; border-radius:8px; text-decoration:none; font-weight:bold;">
+                    <hr style="border:0; border-top:1px solid #eee; margin:10px 0;">
+                    <a href="https://www.google.com/maps/dir/?api=1&destination=${loc.lat},${loc.lng}" 
+                       target="_blank" 
+                       style="display:block; text-align:center; background:var(--lexi-blue); color:white; padding:10px; border-radius:8px; text-decoration:none; font-weight:bold; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
                        🚗 Get Directions ${dist ? '('+dist+')' : ''}
                     </a>
                 </div>
             `);
             markers.push(m);
 
+            // 2. Sidebar List Item
             const div = document.createElement('div');
             div.className = 'list-item';
             div.innerHTML = `
-                <div style="display:flex; justify-content:space-between;">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                     <strong style="color:var(--lexi-blue);">${loc.name}</strong>
                     <span style="font-size:0.8em; color:var(--lexi-blue); font-weight:bold;">${dist}</span>
                 </div>
+                <div style="font-size:0.75em; font-weight:bold; color:#555; margin: 2px 0;">${loc.cat} ${servicesText ? '• ' + servicesText : ''}</div>
                 <small style="color:#666;">${loc.addr}</small><br>
                 <div style="margin-top:4px;">${statusHtml}</div>
             `;
@@ -261,9 +256,6 @@
             };
             listContainer.appendChild(div);
         });
-        
-        // Final tile refresh check
-        map.invalidateSize();
     }
 
     function resetLocations() {
@@ -280,16 +272,10 @@
 
     function locateUser() {
         map.locate({setView: true, maxZoom: 14});
-        map.on('locationfound', (e) => { 
-            userLatLng = e.latlng; 
-            updateMap(); 
-        });
+        map.on('locationfound', (e) => { userLatLng = e.latlng; updateMap(); });
     }
 
-    window.onload = () => {
-        toggleFilterState();
-        setTimeout(() => { map.invalidateSize(); }, 500);
-    };
+    window.onload = toggleFilterState;
 </script>
 </body>
 </html>
