@@ -516,4 +516,37 @@ const defaultLocations = [
         "close": "17:00",
         "services": ["Medical", "Dental"]
     }
+    {
+        "name": "San Antonio Regional Hospital",
+        "company": "San Antonio Regional Hospital",
+        "lat": 34.1035,
+        "lng": -117.6534,
+        "addr": "999 San Bernardino Rd, Upland, CA 91786",
+        "cat": "Medical",
+        "open": "00:00", 
+        "close": "23:59",
+        "services": ["Emergency", "Surgery", "Inpatient Care"]
+    },
+    {
+        "name": "TD SYNNEX",
+        "company": "Pickup/Deliveries",
+        "lat": 33.9931,
+        "lng": -117.6892,
+        "addr": "15065 Flight Ave, Chino, CA 91708",
+        "cat": "Admin",
+        "open": "08:00",
+        "close": "17:00",
+        "services": ["IT Distribution", "Logistics", "Warehouse"]
+    },
+    {
+        "name": "Ingram Micro",
+        "company": "Pickup/Deliveries",
+        "lat": 33.9745,
+        "lng": -117.5583,
+        "addr": "12510 Micro Dr, Eastvale, CA 91752",
+        "cat": "Admin",
+        "open": "08:30",
+        "close": "17:30",
+        "services": ["Technology Solutions", "Logistics", "Distribution"]
+    }
 ];
