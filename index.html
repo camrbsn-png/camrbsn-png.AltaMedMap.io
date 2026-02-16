@@ -38,7 +38,7 @@
         }
         
         #sidebar { width: 350px; min-width: 350px; background: #fff; z-index: 9999; display: flex; flex-direction: column; box-shadow: 2px 0 15px rgba(0,0,0,0.1); transition: transform 0.3s ease; }
-        #map-container { flex-grow: 1; position: relative; height: 100%; }
+        #map-container { flex-grow: 1; position: relative; height: 100%; overflow: hidden; }
         #map { height: 100%; width: 100%; background: #f0f0f0; }
 
         @media (max-width: 1024px) {
@@ -127,24 +127,37 @@
 <script>
     let markers = [];
     let userLatLng = null;
-    const streetLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png');
-    const satLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}');
-    const map = L.map('map', { zoomControl: false, layers: [streetLayer] }).setView([34.0522, -118.2437], 10);
 
-    // Fix for "checkerboard" tile loading
-    setTimeout(() => { map.invalidateSize(); }, 500);
+    // Use CartoDB tiles for more reliable loading
+    const streetLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        attribution: '©OpenStreetMap',
+        maxZoom: 19
+    });
+    
+    const satLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        attribution: '©Esri'
+    });
+
+    const map = L.map('map', { 
+        zoomControl: false, 
+        layers: [streetLayer],
+        trackResize: true 
+    }).setView([34.0522, -118.2437], 10);
+
+    // CRITICAL FIX: Ensure tiles reload when window is resized or sidebar toggled
+    window.addEventListener('resize', () => { map.invalidateSize(); });
 
     map.on('mousedown', function() {
         if (window.innerWidth <= 1024) {
             document.getElementById('sidebar').classList.add('closed');
+            setTimeout(() => { map.invalidateSize(); }, 300);
         }
     });
 
     function toggleSidebar() {
-        const sidebar = document.getElementById('sidebar');
-        sidebar.classList.toggle('closed');
-        // Redraw map when sidebar opens/closes to prevent gray tiles
-        setTimeout(() => { map.invalidateSize(); }, 300);
+        document.getElementById('sidebar').classList.toggle('closed');
+        // Force map tile recalculation after sidebar animation
+        setTimeout(() => { map.invalidateSize(); }, 350);
     }
 
     function getCustomIcon(loc) {
@@ -181,8 +194,8 @@
         const closeVal = closeH * 100 + closeM;
         const isOpen = currentTime >= openVal && currentTime < closeVal;
         return isOpen ? 
-            `<span style="color:var(--lexi-turquoise); font-weight:bold;">● Open</span> <span style="font-size:0.8em; color:#666;">(Closes ${closeTime})</span>` : 
-            `<span style="color:var(--hospital-red); font-weight:bold;">○ Closed</span> <span style="font-size:0.8em; color:#666;">(Opens ${openTime})</span>`;
+            `<span style="color:var(--lexi-turquoise); font-weight:bold;">● Open</span>` : 
+            `<span style="color:var(--hospital-red); font-weight:bold;">○ Closed</span>`;
     }
 
     function updateMap() {
@@ -190,6 +203,7 @@
         markers = [];
         const listContainer = document.getElementById('location-list');
         listContainer.innerHTML = '';
+        
         const searchQuery = document.getElementById('site-search').value.toLowerCase();
         const checkedCompanies = Array.from(document.querySelectorAll('.company-filter:checked')).map(cb => cb.value);
         const checkedCats = Array.from(document.querySelectorAll('.cat-filter:checked')).map(cb => cb.value);
@@ -210,20 +224,19 @@
         filtered.forEach(loc => {
             const statusHtml = getOpenStatus(loc.open, loc.close);
             const dist = userLatLng ? (map.distance(userLatLng, [loc.lat, loc.lng]) * 0.000621371).toFixed(1) + " mi" : "";
-            const servicesText = loc.services ? loc.services.join(', ') : '';
-
+            
             const m = L.marker([loc.lat, loc.lng], { icon: getCustomIcon(loc) }).addTo(map);
             
-            // Corrected Directions URL: removed the stray { character
+            // CLEANED URL: Standardized Google Maps link
+            const mapLink = `https://www.google.com/maps/dir/?api=1&destination=${loc.lat},${loc.lng}`;
+
             m.bindPopup(`
-                <div style="font-family: sans-serif; min-width:200px; padding:5px;">
+                <div style="font-family: sans-serif; min-width:200px;">
                     <strong style="font-size:1.1em; color:var(--lexi-blue);">${loc.name}</strong><br>
-                    <div style="font-size:0.85em; font-weight:bold; color:#444; margin-bottom:4px;">${loc.cat} ${servicesText ? '• ' + servicesText : ''}</div>
+                    <div style="font-size:0.85em; font-weight:bold; color:#444; margin:4px 0;">${loc.cat}</div>
                     <div style="margin: 4px 0;">${statusHtml}</div>
                     <div style="color:#666; margin-bottom:8px; font-size:0.9em;">${loc.addr}</div>
-                    <hr style="border:0; border-top:1px solid #eee; margin:10px 0;">
-                    <a href="https://www.google.com/maps/dir/?api=1&destination=${loc.lat},${loc.lng}" 
-                       target="_blank" 
+                    <a href="${mapLink}" target="_blank" 
                        style="display:block; text-align:center; background:var(--lexi-blue); color:white; padding:10px; border-radius:8px; text-decoration:none; font-weight:bold;">
                        🚗 Get Directions ${dist ? '('+dist+')' : ''}
                     </a>
@@ -234,11 +247,10 @@
             const div = document.createElement('div');
             div.className = 'list-item';
             div.innerHTML = `
-                <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                <div style="display:flex; justify-content:space-between;">
                     <strong style="color:var(--lexi-blue);">${loc.name}</strong>
                     <span style="font-size:0.8em; color:var(--lexi-blue); font-weight:bold;">${dist}</span>
                 </div>
-                <div style="font-size:0.75em; font-weight:bold; color:#555; margin: 2px 0;">${loc.cat} ${servicesText ? '• ' + servicesText : ''}</div>
                 <small style="color:#666;">${loc.addr}</small><br>
                 <div style="margin-top:4px;">${statusHtml}</div>
             `;
@@ -249,6 +261,9 @@
             };
             listContainer.appendChild(div);
         });
+        
+        // Final tile refresh check
+        map.invalidateSize();
     }
 
     function resetLocations() {
@@ -265,10 +280,16 @@
 
     function locateUser() {
         map.locate({setView: true, maxZoom: 14});
-        map.on('locationfound', (e) => { userLatLng = e.latlng; updateMap(); });
+        map.on('locationfound', (e) => { 
+            userLatLng = e.latlng; 
+            updateMap(); 
+        });
     }
 
-    window.onload = toggleFilterState;
+    window.onload = () => {
+        toggleFilterState();
+        setTimeout(() => { map.invalidateSize(); }, 500);
+    };
 </script>
 </body>
 </html>
