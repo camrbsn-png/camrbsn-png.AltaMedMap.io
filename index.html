@@ -3,549 +3,171 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>AltaMed - Master Directory</title>
+    <title>LexiGlobal Directory</title>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="application-name" content="AltaMed">
-<meta name="apple-mobile-web-app-title" content="AltaMed">
-<link rel="icon" sizes="192x192" href="https://www.altamed.org/themes/custom/altamed/favicon.ico">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="LexiGlobal">
+    
     <style>
         :root { 
-            --altamed-turquoise: #1abc9c; 
+            --lexi-blue: #0984e3;
+            --lexi-turquoise: #1abc9c; 
             --open-green: #27ae60;
             --closed-red: #e74c3c;
-            --vh: 1vh;
             --color-admin: #2d3436;
-            --color-print: #0984e3;
             --color-sat: #636e72;
             --color-locate: #6c5ce7;
-            --color-reset: #e67e22;
         }
         
         html, body { height: 100%; width: 100%; margin: 0; padding: 0; overflow: hidden; position: fixed; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; display: flex; flex-direction: row; height: 100vh; height: -webkit-fill-available; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; display: flex; flex-direction: row; height: 100vh; }
         
-        #sidebar { 
-            width: 350px; 
-            min-width: 350px; 
-            max-height: 100vh;
-            background: #fff; 
-            z-index: 9999; 
-            display: flex; 
-            flex-direction: column; 
-            box-shadow: 2px 0 15px rgba(0,0,0,0.1); 
-            transition: transform 0.3s ease;
-            overflow: hidden; 
-        }
-
+        #sidebar { width: 350px; min-width: 350px; background: #fff; z-index: 9999; display: flex; flex-direction: column; box-shadow: 2px 0 15px rgba(0,0,0,0.1); transition: transform 0.3s ease; }
         #map-container { flex-grow: 1; position: relative; height: 100%; }
-        #map { height: 100%; width: 100%; touch-action: none; background: #ddd; }
+        #map { height: 100%; width: 100%; }
 
         @media (max-width: 1024px) {
             #sidebar { position: absolute; left: 0; top: 0; height: 100%; width: 85%; max-width: 320px; transform: translateX(0); }
             #sidebar.closed { transform: translateX(-100%); }
-            #menu-toggle { display: block !important; }
-            #mobile-close { display: block !important; }
         }
 
-        #menu-toggle { display: none; position: absolute; top: 20px; left: 15px; z-index: 7000; background: var(--altamed-turquoise); color: white; border: none; padding: 12px 18px; border-radius: 10px; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-        #mobile-close { display: none; background: rgba(0,0,0,0.2); color: white; border: none; padding: 5px 10px; border-radius: 5px; font-size: 0.8rem; cursor: pointer; }
-
-        .nav-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-            background: #0984e3;
-            color: white !important;
-            text-decoration: none !important;
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            font-weight: bold;
-            margin-top: 10px;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        .nav-btn:hover { background: #074a86; }
-
-        .delete-btn {
-            background: var(--closed-red) !important;
-            margin-left: 5px;
-        }
-        .delete-btn:hover { background: #c0392b !important; }
-
-        #admin-section { display: none; padding: 15px; background: #f1f2f6; border-bottom: 2px solid #dfe4ea; max-height: 50vh; overflow-y: auto; flex-shrink: 0; }
-        .admin-input { width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; font-size: 0.8rem; }
-        
-        #filter-section { padding: 10px 15px; background: #f8f9fa; border-bottom: 1px solid #eee; flex-shrink: 0; }
+        /* Filter Styling */
+        #filter-section { padding: 15px; background: #f8f9fa; border-bottom: 1px solid #eee; }
         .filter-row { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 8px; }
-        .filter-chip { display: flex; align-items: center; gap: 4px; font-size: 0.7rem; cursor: pointer; background: white; padding: 4px 8px; border-radius: 20px; border: 1px solid #ddd; user-select: none; transition: 0.2s; }
-        .filter-chip:has(input:checked) { background: var(--altamed-turquoise); color: white; border-color: var(--altamed-turquoise); }
+        .filter-chip { display: flex; align-items: center; gap: 4px; font-size: 0.75rem; cursor: pointer; background: white; padding: 6px 10px; border-radius: 20px; border: 1px solid #ddd; transition: 0.2s; }
+        .filter-chip:has(input:checked) { background: var(--lexi-blue); color: white; border-color: var(--lexi-blue); }
         .filter-chip input { display: none; }
 
-        #search-sticky-section { padding: 15px; background: white; border-bottom: 1px solid #eee; flex-shrink: 0; z-index: 10; position: relative; }
+        #search-sticky-section { padding: 15px; background: white; border-bottom: 1px solid #eee; }
+        .search-box { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; box-sizing: border-box; }
 
-        .service-tag { display: inline-block; padding: 2px 6px; background: #f1f2f6; border-radius: 4px; font-size: 0.65rem; margin-right: 4px; margin-top: 4px; color: #2d3436; border: 1px solid #dfe4ea; font-weight: 500; }
+        .content { overflow-y: auto; flex-grow: 1; }
+        .list-item { padding: 16px; border-bottom: 1px solid #f0f0f0; cursor: pointer; }
+        .list-item:hover { background: #f8f9fb; border-left: 4px solid var(--lexi-blue); }
 
-        .list-item { padding: 16px; border-bottom: 1px solid #f0f0f0; cursor: pointer; transition: background 0.2s; display: flex; flex-direction: column; gap: 8px; position: relative; }
-        .list-item:hover { background: #f8f9fb; border-left: 4px solid var(--altamed-turquoise); padding-left: 12px; }
-        .list-item-header { display: flex; justify-content: space-between; align-items: flex-start; }
-        .list-item-title { font-weight: 700; color: #2d3436; font-size: 0.95rem; margin: 0; flex: 1; padding-right: 10px; }
-        .cat-badge { font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; color: white; font-weight: 800; text-transform: uppercase; }
-        .list-item-info { color: #636e72; font-size: 0.8rem; line-height: 1.4; }
-        .status-line { margin-top: 4px; display: block; }
-        .list-item-actions { display: flex; gap: 8px; margin-top: 4px; }
+        #control-panel { position: absolute; bottom: 40px; right: 20px; z-index: 8000; display: flex; flex-direction: column; gap: 10px; }
+        .btn { padding: 14px; border: none; border-radius: 12px; font-weight: 700; color: white; box-shadow: 0 6px 15px rgba(0,0,0,0.3); width: 140px; display: flex; align-items: center; gap: 8px; cursor: pointer; }
         
-        /* NEW DISTANCE BADGE */
-        .dist-badge { position: absolute; top: 40px; right: 16px; font-size: 0.7rem; color: #95a5a6; font-weight: 600; }
-
-        #control-panel { 
-            position: absolute; 
-            bottom: 40px; 
-            right: 20px; 
-            z-index: 8000; 
-            display: flex; 
-            flex-direction: column; 
-            gap: 10px; 
-            padding-bottom: env(safe-area-inset-bottom); 
-        }
-        
-        .btn { padding: 14px; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; 
-		color: white; box-shadow: 0 6px 15px rgba(0,0,0,0.3); 
-		width: 150px; font-size: 0.85rem; display: 
-		flex; align-items: center; gap: 8px; transition: 0.2s; flex-shrink: 0; 
-		pointer-events: auto; 
-    cursor: pointer;
-    touch-action: manipulation; /* Improves response time on mobile */}
-        
-        #lock-btn { background: var(--color-admin); }
-        #lock-btn.unlocked { background: var(--closed-red); animation: pulse 2s infinite; }
-        #sat-btn { background: var(--color-sat); }
         #loc-btn { background: var(--color-locate); }
-
-        @media (max-width: 600px) {
-            #control-panel { bottom: 20px; right: 15px; gap: 6px; }
-            .btn { width: 85px; padding: 8px 10px; font-size: 0.65rem; border-radius: 8px; gap: 4px; }
-            .btn span { font-size: 0.9rem; }
-        }
-
-        .content { padding: 0; overflow-y: auto; flex-grow: 1; min-height: 0; -webkit-overflow-scrolling: touch; }
-        
-        .search-container { position: relative; width: 100%; }
-        .search-box { width: 100%; padding: 12px; padding-right: 35px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; box-sizing: border-box; }
-        
-        /* SEARCH CLEAR BUTTON */
-        #clear-search { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #999; font-weight: bold; font-size: 1.2rem; display: none; }
-
-        .autocomplete-suggestions { 
-            position: absolute; top: 100%; left: 0; right: 0; 
-            background: white; border: 1px solid #ddd; border-top: none; 
-            z-index: 10001; max-height: 200px; overflow-y: auto; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1); border-radius: 0 0 8px 8px;
-            display: none;
-        }
-        .suggestion-item { padding: 10px; cursor: pointer; border-bottom: 1px solid #eee; font-size: 0.9rem; }
-        .suggestion-item:hover { background: #f1f2f6; }
-
-        .custom-div-icon { display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3); color: white; width: 30px !important; height: 30px !important; }
-
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0px rgba(231, 76, 60, 0.7); }
-            70% { box-shadow: 0 0 0 15px rgba(231, 76, 60, 0); }
-            100% { box-shadow: 0 0 0 0px rgba(231, 76, 60, 0); }
-        }
-        
-        .empty-state { padding: 40px 20px; text-align: center; color: #95a5a6; }
+        #sat-btn { background: var(--color-sat); }
     </style>
 </head>
 <body>
 
 <div id="sidebar">
-    <div style="background:var(--altamed-turquoise); color:white; padding:20px; display:flex; justify-content:space-between; align-items:center; flex-shrink: 0;">
-        <h2 style="margin:0; font-size:1.2rem;">AltaMed Directory</h2>
-        <button id="mobile-close" onclick="toggleSidebar()">✕ Close</button>
-    </div>
-
-    <div id="admin-section">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-            <strong id="admin-panel-title" style="font-size: 0.8rem;">Add New Site</strong>
-            <div style="display:flex; gap:5px;">
-                <button onclick="exportLocations()" style="background:var(--color-print); color:white; border:none; padding:4px 8px; border-radius:4px; font-size:0.7rem; cursor:pointer;">📥 Export JSON</button>
-                <button onclick="resetLocations()" style="background:var(--color-reset); color:white; border:none; padding:4px 8px; border-radius:4px; font-size:0.7rem; cursor:pointer;">🔄 Reset Data</button>
-            </div>
-        </div>
-        
-        <p style="font-size: 0.7rem; margin: 5px 0; color: #666;">Click a pin on the map to edit it, or fill the fields below to add a new one.</p>
-        
-        <input type="text" id="new-name" class="admin-input" placeholder="Facility Name">
-        <input type="text" id="new-addr" class="admin-input" placeholder="Address">
-        <div style="display:flex; gap:5px;">
-            <select id="new-cat" class="admin-input">
-                <option value="Medical">🏥 Medical</option>
-                <option value="PACE">👵 PACE</option>
-                <option value="Admin">🏢 Admin</option>
-            </select>
-            <input type="text" id="new-open" class="admin-input" placeholder="08:00">
-            <input type="text" id="new-close" class="admin-input" placeholder="17:00">
-        </div>
-        
-        <div id="admin-button-container" style="display:flex; gap:5px;">
-            <button id="admin-submit-btn" class="btn" style="flex-grow:1; background:var(--altamed-turquoise); margin-bottom:10px; justify-content:center;" onclick="saveSite()">＋ Add Site</button>
-            <button id="admin-cancel-btn" class="btn" style="display:none; width:auto; background:var(--color-sat); margin-bottom:10px; justify-content:center;" onclick="clearAdminForm()">Cancel</button>
-        </div>
+    <div style="background:var(--lexi-blue); color:white; padding:20px; flex-shrink: 0;">
+        <h2 style="margin:0; font-size:1.2rem;">LexiGlobal Directory</h2>
     </div>
 
     <div id="filter-section">
-        <small style="color:#666; font-weight:bold; display:block; margin-bottom:5px;">Facility Types</small>
+        <small style="color:#666; font-weight:bold; display:block; margin-bottom:8px;">MAIN DIRECTORIES</small>
         <div class="filter-row">
-            <label class="filter-chip"><input type="checkbox" class="cat-filter" value="Medical" checked onchange="updateMap()"> 🏥 Medical</label>
-            <label class="filter-chip"><input type="checkbox" class="cat-filter" value="PACE" checked onchange="updateMap()"> 👵 PACE</label>
-            <label class="filter-chip"><input type="checkbox" class="cat-filter" value="Admin" checked onchange="updateMap()"> 🏢 Admin</label>
+            <label class="filter-chip"><input type="checkbox" class="company-filter" value="AltaMed" onchange="toggleSubFilters()"> AltaMed</label>
+            <label class="filter-chip"><input type="checkbox" class="company-filter" value="Pickup/Deliveries" onchange="toggleSubFilters()"> Pickup/Deliveries</label>
+            <label class="filter-chip"><input type="checkbox" class="company-filter" value="East Valley" onchange="toggleSubFilters()"> East Valley</label>
+            <label class="filter-chip"><input type="checkbox" class="company-filter" value="San Antonio Regional Hospital" onchange="toggleSubFilters()"> San Antonio</label>
+        </div>
+
+        <div id="altamed-sub-section" style="display:none; margin-top:15px; padding-top:10px; border-top:1px dashed #ccc;">
+            <small style="color:var(--lexi-turquoise); font-weight:bold; display:block; margin-bottom:8px;">ALTAMED CATEGORIES</small>
+            <div class="filter-row">
+                <label class="filter-chip"><input type="checkbox" class="cat-filter" value="Medical" checked onchange="updateMap()"> Medical</label>
+                <label class="filter-chip"><input type="checkbox" class="cat-filter" value="PACE" checked onchange="updateMap()"> PACE</label>
+                <label class="filter-chip"><input type="checkbox" class="cat-filter" value="Admin" checked onchange="updateMap()"> Admin</label>
+            </div>
         </div>
     </div>
 
     <div id="search-sticky-section">
-        <div class="search-container">
-            <input type="text" id="site-search" class="search-box" placeholder="Search facilities..." onkeyup="handleSearch(event)" autocomplete="off">
-            <span id="clear-search" onclick="clearSearchInput()">×</span>
-            <div id="autocomplete-list" class="autocomplete-suggestions"></div>
-        </div>
+        <input type="text" id="site-search" class="search-box" placeholder="Search LexiGlobal..." onkeyup="updateMap()">
     </div>
 
-<div class="content">
+    <div class="content">
         <div id="location-list"></div>
     </div>
 
-    <div style="font-size: 7.5pt; color: #95a5a6; padding: 5px; text-align: center; flex-shrink: 0; border-top: 1px solid #f0f0f0;">
+    <div style="font-size: 3pt; color: #95a5a6; padding: 5px; text-align: center; border-top: 1px solid #f0f0f0;">
         © Made By Cameron
     </div>
 </div>
 
 <div id="map-container">
-    <button id="menu-toggle" onclick="toggleSidebar()">☰ Menu</button>
+    <button id="menu-toggle" style="position:absolute; top:20px; left:20px; z-index:7000; padding:10px; display:none;" onclick="toggleSidebar()">☰ Menu</button>
     <div id="map"></div>
     <div id="control-panel">
-        <button id="lock-btn" class="btn" onclick="toggleLock()"><span>🔒</span> Unlock</button>
-        <button id="sat-btn" class="btn" onclick="toggleSatellite()"><span>🛰️</span> Satellite</button>
-        <button id="loc-btn" class="btn" onclick="locateUser()"><span>📍</span> Find Me</button>
+        <button id="sat-btn" class="btn" onclick="toggleSatellite()">🛰️ Satellite</button>
+        <button id="loc-btn" class="btn" onclick="locateUser()">📍 Find Me</button>
     </div>
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="locations.js"></script>
 
 <script>
-    const categoryConfig = {
-        "Medical": { color: "#1abc9c", icon: "🏥" },
-        "PACE": { color: "#8e44ad", icon: "👵" },
-        "Admin": { color: "#34495e", icon: "🏢" }
-    };
-
-    const serviceIcons = {
-        "Medical": "🩺", "Dental": "🦷", "Pharmacy": "💊", "PACE": "👵", "Corporate": "💼", "Urgent Care": "⚡"
-    };
-
-    const defaultLocations = [{"name":"Anaheim Medical","lat":33.85327008648436,"lng":-117.92078197002412,"addr":"1325 N Anaheim Blvd Anaheim","cat":"Medical","open":"08:00","close":"17:00","services":["Medical","Dental","PACE","Urgent Care"]},{"name":"Bell Gardens Viva Gold","lat":33.971512130752274,"lng":-118.16571056842805,"addr":"6811 Eastern Ave Bell Gardens","cat":"Medical","open":"08:00","close":"17:00","services":["Medical","Dental"]},{"name":"Bellflower Viva Gold","lat":33.90161956331923,"lng":-118.1152528524399,"addr":"10234 Rosecrans Ave Bellflower","cat":"Medical","open":"08:00","close":"17:00","services":["Medical"]},{"name":"Bellflower-Pharmacy","lat":33.90268814421278,"lng":-118.14076602458955,"addr":"9056 Rosecrans Ave Bellflower","cat":"Medical","open":"08:00","close":"17:00","services":["Medical","Pharmacy"]},{"name":"CHLA PODS 1-4","lat":34.09791946832177,"lng":-118.29075515270235,"addr":"4650 West Sunset Blvd. Los Angeles","cat":"Medical","open":"08:00","close":"17:00","services":["Medical"]},{"name":"Compton PACE","lat":33.888461563512024,"lng":-118.19528460502626,"addr":"2616 E Alondra Blvd Compton","cat":"PACE","open":"08:00","close":"17:00","services":["PACE","Medical"]},{"name":"Corporate HQ","lat":34.007989,"lng":-118.155341,"addr":"2040 Camfield Ave","cat":"Admin","open":"08:00","close":"17:00","services":["Corporate"]},{"name":"East LA 1st Street","lat":34.04426770472888,"lng":-118.21177482604982,"addr":"2219 East 1st Street Los Angeles","cat":"Medical","open":"08:00","close":"17:00","services":["Medical"]},{"name":"East LA Boyle Heights","lat":34.024200668439484,"lng":-118.18775832653047,"addr":"3945 Whittier Blvd. Los Angeles","cat":"Medical","open":"08:00","close":"17:00","services":["Medical","Dental","Pharmacy"]},{"name":"East LA Commerce","lat":34.019905688344345,"lng":-118.15360307693483,"addr":"5427 Whittier Blvd. Los Angeles","cat":"Medical","open":"08:00","close":"17:00","services":["Medical","Dental"]},{"name":"El Monte - Garvey Viva Gold","lat":34.062956807151224,"lng":-118.04825663566591,"addr":"10127 Garvey Ave El Monte","cat":"Medical","open":"08:00","close":"17:00","services":["Medical"]},{"name":"El Monte - Peck Rd","lat":34.07327960260563,"lng":-118.0242294073105,"addr":"3703 Peck Rd El Monte","cat":"Medical","open":"08:00","close":"17:00","services":["Medical"]},{"name":"El Monte - Santa Anita","lat":34.06628085791001,"lng":-118.04220557212831,"addr":"3208 Santa Anita Ave El Monte","cat":"Medical","open":"08:00","close":"17:00","services":["Medical"]},{"name":"Estrada Courts","lat":34.020853,"lng":-118.208152,"addr":"1305 S. Concord Street Los Angeles","cat":"Medical","open":"08:00","close":"17:00","services":["Medical"]},{"name":"Fair Oaks","lat":34.177574481443166,"lng":-118.15104961395265,"addr":"1855 N Fair Oaks Ave","cat":"Medical","open":"08:00","close":"17:00","services":["Medical","Dental"]},{"name":"Garden Grove","lat":33.77773386928829,"lng":-117.91554629802705,"addr":"12751 Harbor Blvd. Garden Grove","cat":"Medical","open":"08:00","close":"17:00","services":["Medical","Dental"]},{"name":"Goodrich","lat":34.018376160551945,"lng":-118.1539410352707,"addr":"972 Goodrich Blvd. Commerce","cat":"Medical","open":"08:00","close":"17:00","services":["Medical"]},{"name":"HP Medical (Rugby)","lat":33.979132575171484,"lng":-118.22670936584474,"addr":"6601 Rugby Ave","cat":"Medical","open":"08:00","close":"17:00","services":["Medical"]},{"name":"HP Medical (Slauson)","lat":33.98894517106316,"lng":-118.23693931102754,"addr":"1900 E Slauson Ave","cat":"Medical","open":"08:00","close":"18:00","services":["Medical","Dental","Pharmacy"]},{"name":"Huntington Beach - Main","lat":33.680153,"lng":-118.000353,"addr":"2100 Main St Huntington Beach","cat":"Medical","open":"08:00","close":"17:00","services":["Medical"]},{"name":"Huntington Beach - Newman","lat":33.705071944479116,"lng":-117.98832535743715,"addr":"8041 Newman Ave. Huntington Beach","cat":"Medical","open":"08:00","close":"17:00","services":["Medical","Dental"]},{"name":"Huntington Park Florence","lat":33.97461733299605,"lng":-118.24613392353059,"addr":"1542 E Florence Ave Los Angeles","cat":"Medical","open":"08:00","close":"17:00","services":["Medical"]},{"name":"Huntington Park Seville","lat":33.968758282029576,"lng":-118.22261095046998,"addr":"7705 Seville Ave Huntington Park","cat":"Medical","open":"08:00","close":"17:00","services":["Medical","Dental"]},{"name":"Indiana","lat":34.03004255953751,"lng":-118.19211959838869,"addr":"512 South Indiana St. Los Angeles","cat":"Medical","open":"08:00","close":"17:00","services":["Medical"]},{"name":"Inglewood PACE","lat":33.944499207394635,"lng":-118.32902491092683,"addr":"3310 W Century Blvd Inglewood","cat":"PACE","open":"08:00","close":"17:00","services":["PACE","Medical"]},{"name":"Lake","lat":34.17347368294868,"lng":-118.13228487968445,"addr":"1595 N Lake Ave Pasadena","cat":"Medical","open":"08:00","close":"17:00","services":["Medical"]},{"name":"Lime","lat":34.14843407544131,"lng":-117.99315869808198,"addr":"513 Lime Ave Monrovia","cat":"Medical","open":"08:00","close":"17:00","services":["Medical"]},{"name":"Lincoln","lat":34.18103603933744,"lng":-118.15998673439027,"addr":"2059 Lincoln Ave Pasadena","cat":"Medical","open":"08:00","close":"17:00","services":["Medical"]},{"name":"Logistics Warehouse","lat":34.012115,"lng":-118.154397,"addr":"5550 Union Pacific Ave","cat":"Admin","open":"07:00","close":"16:00","services":["Corporate"]},{"name":"Lynwood PACE","lat":33.92732412334932,"lng":-118.19785416126253,"addr":"3820 MLK Jr. Blvd. Lynwood","cat":"PACE","open":"08:00","close":"17:00","services":["PACE"]},{"name":"Montana Admin","lat":34.18106710395763,"lng":-118.16047489643098,"addr":"455 Montana St Pasadena","cat":"Admin","open":"08:00","close":"17:00","services":["Admin"]},{"name":"Norwalk PACE","lat":33.90277719201606,"lng":-118.08770656585695,"addr":"11541 Rosecrans Ave Norwalk","cat":"PACE","open":"08:00","close":"17:00","services":["PACE"]},{"name":"Orange - Chapman","lat":33.78744927756741,"lng":-117.81094551086427,"addr":"4010 East Chapman Ave. Orange","cat":"Medical","open":"08:00","close":"17:00","services":["Medical"]},{"name":"Paramount - Paramount","lat":33.89799074074113,"lng":-118.15989553928377,"addr":"14906 Paramount Blvd Paramount","cat":"Medical","open":"08:00","close":"17:00","services":["Medical"]},{"name":"Pico Rivera - Passons","lat":33.98499091126155,"lng":-118.0858236551285,"addr":"6336 Passons Blvd. Pico Rivera","cat":"Medical","open":"08:00","close":"17:00","services":["Medical"]},{"name":"Pico Rivera - Washington","lat":33.978852325740824,"lng":-118.08984696865083,"addr":"9406 Washington Blvd Pico Rivera","cat":"Medical","open":"08:00","close":"17:00","services":["Medical","Dental"]},{"name":"Pomona PACE","lat":34.089656626965905,"lng":-117.75126636028291,"addr":"2277 N Garey Ave Pomona","cat":"PACE","open":"08:00","close":"17:00","services":["PACE"]},{"name":"Retail Clinic Olympic","lat":34.05270831135927,"lng":-118.28286409378053,"addr":"2323 W Olympic Blvd Los Angeles","cat":"Medical","open":"08:00","close":"17:00","services":["Medical"]},{"name":"Santa Ana Main","lat":33.75689040084305,"lng":-117.86800146102907,"addr":"1400 N Main St","cat":"Medical","open":"08:00","close":"17:00","services":["Medical","Dental","Pharmacy"]},{"name":"Santa Ana Sunflower","lat":33.696524,"lng":-117.91807,"addr":"3601 W Sunflower Ave Santa Ana","cat":"PACE","open":"08:00","close":"17:00","services":["PACE","Medical"]},{"name":"South Gate","lat":33.954263,"lng":-118.184678,"addr":"8627 Atlantic Ave. South Gate","cat":"Medical","open":"08:00","close":"17:00","services":["Medical","Dental","Pharmacy"]},{"name":"South LA PACE","lat":33.94528244036084,"lng":-118.24131667613985,"addr":"1776 E. Century Blvd. Los Angeles","cat":"PACE","open":"08:00","close":"17:00","services":["PACE"]},{"name":"Walnut Park PACE","lat":33.970350987317815,"lng":-118.23278188705446,"addr":"7716 Alameda St Walnut Park","cat":"PACE","open":"08:00","close":"17:00","services":["PACE","Medical"]},{"name":"West Covina - Sunset","lat":34.059845946354365,"lng":-117.94707834720613,"addr":"1300 S. Sunset Ave West Covina","cat":"Medical","open":"08:00","close":"17:00","services":["Medical"]},{"name":"West Covina Amar - Viva Gold","lat":34.02935791426301,"lng":-117.91279435157776,"addr":"1536 E Amar Rd West Covina","cat":"Medical","open":"08:00","close":"17:00","services":["Medical"]},{"name":"West Covina PACE","lat":34.05898377329629,"lng":-117.93521225452425,"addr":"933 S Glendora Ave West Covina","cat":"PACE","open":"08:00","close":"17:00","services":["PACE"]},{"name":"Westlake & 3rd Street","lat":34.06245463306585,"lng":-118.27342271804811,"addr":"2100 West 3rd Street Los Angeles","cat":"Medical","open":"08:00","close":"17:00","services":["Medical","Dental"]}]
-
-    let locations = JSON.parse(localStorage.getItem('altamed_locations')) || [...defaultLocations];
-    locations.sort((a, b) => a.name.localeCompare(b.name));
+    let markers = [];
+    let userLatLng = null;
 
     const streetLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png');
     const satLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}');
-    const map = L.map('map', { zoomControl: false, layers: [streetLayer] }).setView([34.008, -118.14], 11);
+    const map = L.map('map', { zoomControl: false, layers: [streetLayer] }).setView([34.0522, -118.2437], 10);
 
-    let isUnlocked = false, markers = [];
-    let editingIndex = -1; 
-    let userLatLng = null; // Store user location for distance
-
-    function handleSearch(e) {
-        const query = e.target.value.toLowerCase();
-        const suggestionsCont = document.getElementById('autocomplete-list');
-        const clearBtn = document.getElementById('clear-search');
+    function toggleSubFilters() {
+        const checkedCompanies = Array.from(document.querySelectorAll('.company-filter:checked')).map(cb => cb.value);
+        const altamedSection = document.getElementById('altamed-sub-section');
         
-        clearBtn.style.display = query.length > 0 ? 'block' : 'none';
-
-        if (query.length < 2) { suggestionsCont.style.display = 'none'; updateMap(); return; }
-        const filtered = locations.filter(loc => loc.name.toLowerCase().includes(query) || loc.addr.toLowerCase().includes(query)).slice(0, 5);
-        if (filtered.length > 0) {
-            suggestionsCont.innerHTML = filtered.map(loc => `<div class="suggestion-item" onclick="selectSuggestion('${loc.name.replace(/'/g, "\\'")}')"><strong>${loc.name}</strong><br><small>${loc.addr}</small></div>`).join('');
-            suggestionsCont.style.display = 'block';
-        } else { suggestionsCont.style.display = 'none'; }
+        // Show sub-filters only if AltaMed is selected
+        altamedSection.style.display = checkedCompanies.includes("AltaMed") ? 'block' : 'none';
+        
         updateMap();
-    }
-    
-    function clearSearchInput() {
-        document.getElementById('site-search').value = '';
-        document.getElementById('clear-search').style.display = 'none';
-        document.getElementById('autocomplete-list').style.display = 'none';
-        updateMap();
-    }
-
-    function selectSuggestion(name) {
-        document.getElementById('site-search').value = name;
-        document.getElementById('autocomplete-list').style.display = 'none';
-        updateMap();
-        const loc = locations.find(l => l.name === name);
-        if (loc) {
-            map.flyTo([loc.lat, loc.lng], 15);
-            const targetMarker = markers.find(m => m.getLatLng().lat === loc.lat && m.getLatLng().lng === loc.lng);
-            if(targetMarker) targetMarker.openPopup();
-        }
-    }
-
-    function getStatus(openTime, closeTime) {
-        if (!openTime || !closeTime) return "";
-        const now = new Date();
-        const currentTime = now.getHours() + ":" + now.getMinutes().toString().padStart(2, '0');
-        const isOpen = (currentTime >= openTime && currentTime <= closeTime);
-        return isOpen 
-            ? `<span style="color:var(--open-green);">● Open Now (${openTime}-${closeTime})</span>` 
-            : `<span style="color:var(--closed-red);">● Closed (Opens ${openTime})</span>`;
-    }
-
-    function calculateDistance(lat1, lon1, lat2, lon2) {
-        const R = 3958.8; // Radius of Earth in miles
-        const dLat = (lat2 - lat1) * Math.PI / 180;
-        const dLon = (lon2 - lon1) * Math.PI / 180;
-        const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                  Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-                  Math.sin(dLon / 2) * Math.sin(dLon / 2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return (R * c).toFixed(1);
     }
 
     function updateMap() {
         markers.forEach(m => map.removeLayer(m));
         markers = [];
-        const query = document.getElementById('site-search').value.toLowerCase();
-        const list = document.getElementById('location-list');
-        list.innerHTML = '';
+        const listContainer = document.getElementById('location-list');
+        listContainer.innerHTML = '';
+
+        const searchQuery = document.getElementById('site-search').value.toLowerCase();
+        const checkedCompanies = Array.from(document.querySelectorAll('.company-filter:checked')).map(cb => cb.value);
         const checkedCats = Array.from(document.querySelectorAll('.cat-filter:checked')).map(cb => cb.value);
 
-        // Sort by distance if user location is available
-        if (userLatLng) {
-            locations.sort((a, b) => {
-                const distA = calculateDistance(userLatLng.lat, userLatLng.lng, a.lat, a.lng);
-                const distB = calculateDistance(userLatLng.lat, userLatLng.lng, b.lat, b.lng);
-                return distA - distB;
-            });
-        } else {
-            locations.sort((a, b) => a.name.localeCompare(b.name));
-        }
-
-        let visibleCount = 0;
-
-        locations.forEach((loc, index) => {
-            if (checkedCats.includes(loc.cat) && (loc.name.toLowerCase().includes(query) || loc.addr.toLowerCase().includes(query))) {
-                visibleCount++;
-                const config = categoryConfig[loc.cat] || categoryConfig["Medical"];
-                const markerIcon = L.divIcon({ html: `<div class="custom-div-icon" style="background-color:${config.color}">${config.icon}</div>`, className: '', iconSize: [30, 30] });
-                const marker = L.marker([loc.lat, loc.lng], { icon: markerIcon, draggable: isUnlocked }).addTo(map);
-
-                marker.on('dragend', function(event) {
-                    const pos = event.target.getLatLng();
-                    locations[index].lat = pos.lat;
-                    locations[index].lng = pos.lng;
-                    localStorage.setItem('altamed_locations', JSON.stringify(locations));
-                    marker.setPopupContent(getPopupContent(locations[index]));
-                });
-
-                marker.on('click', function() {
-                    if (isUnlocked) loadSiteForEditing(index);
-                });
-
-                marker.bindPopup(getPopupContent(loc));
-                markers.push(marker);
-
-                const item = document.createElement('div');
-                item.className = 'list-item';
-                
-                const navUrl = `https://www.google.com/maps/dir/?api=1&destination=${loc.lat},${loc.lng}`;
-                const statusHtml = getStatus(loc.open, loc.close);
-                
-                const subSvcHtml = (loc.services || [])
-                    .filter(s => s !== loc.cat)
-                    .map(s => `<span class="service-tag">${serviceIcons[s] || ''} ${s}</span>`).join('');
-
-                const distHtml = userLatLng ? `<span class="dist-badge">📍 ${calculateDistance(userLatLng.lat, userLatLng.lng, loc.lat, loc.lng)} mi</span>` : '';
-
-                let actionHtml = `<a href="${navUrl}" target="_blank" class="nav-btn" style="width:auto; margin-top:0; padding:5px 12px;">Go</a>`;
-                if (isUnlocked) {
-                    actionHtml += `<button onclick="deleteLocation(${index})" class="nav-btn delete-btn" style="width:auto; margin-top:0; padding:5px 12px;">Delete</button>`;
-                }
-
-                item.innerHTML = `
-                    <div class="list-item-header">
-                        <p class="list-item-title">${loc.name}</p>
-                        <span class="cat-badge" style="background:${config.color}">${loc.cat}</span>
-                    </div>
-                    ${distHtml}
-                    <div class="list-item-info">
-                        ${loc.addr}
-                        <div style="margin-top:2px;">${subSvcHtml}</div>
-                        <span class="status-line">${statusHtml}</span>
-                    </div>
-                    <div class="list-item-actions" onclick="event.stopPropagation()">${actionHtml}</div>`;
-                
-                item.onclick = () => { 
-                    map.flyTo([loc.lat, loc.lng], 15); 
-                    marker.openPopup(); 
-                    if (window.innerWidth <= 1024) toggleSidebar(); 
-                    if (isUnlocked) loadSiteForEditing(index);
-                };
-                list.appendChild(item);
-            }
+        // Accesses "defaultLocations" from your locations.js file
+        const filtered = defaultLocations.filter(loc => {
+            const matchesCompany = checkedCompanies.length === 0 || checkedCompanies.includes(loc.company);
+            const matchesCat = !checkedCompanies.includes("AltaMed") || checkedCats.includes(loc.cat);
+            const matchesSearch = loc.name.toLowerCase().includes(searchQuery) || loc.addr.toLowerCase().includes(searchQuery);
+            return matchesCompany && matchesCat && matchesSearch;
         });
 
-        if (visibleCount === 0) {
-            list.innerHTML = `<div class="empty-state">No facilities found. Try changing filters or search terms.</div>`;
-        }
-    }
+        filtered.forEach(loc => {
+            const m = L.marker([loc.lat, loc.lng]).addTo(map);
+            m.bindPopup(`<b>${loc.name}</b><br>${loc.addr}`);
+            markers.push(m);
 
-    function getPopupContent(loc) {
-        const navUrl = `https://www.google.com/maps/dir/?api=1&destination=${loc.lat},${loc.lng}`;
-        const svcHtml = (loc.services || []).map(s => `<span class="service-tag">${serviceIcons[s] || ''} ${s}</span>`).join('');
-        const statusHtml = getStatus(loc.open, loc.close);
-        
-        return `
-            <b style="font-size:1.1rem">${loc.name}</b><br>
-            <small style="color:#636e72">${loc.addr}</small><br>
-            <div style="margin: 8px 0; font-size: 0.75rem; font-weight:bold">${statusHtml}</div>
-            <div style="margin-bottom:8px">${svcHtml}</div>
-            <a href="${navUrl}" target="_blank" class="nav-btn">🚗 Directions</a>
-            ${isUnlocked ? '<br><small style="color:#e74c3c; display:block; margin-top:8px; font-weight:bold">🔓 Edit Mode: Drag to move | Click to edit info</small>' : ''}
-        `;
-    }
-
-    function loadSiteForEditing(index) {
-        editingIndex = index;
-        const loc = locations[index];
-        document.getElementById('admin-panel-title').innerText = `Editing: ${loc.name}`;
-        document.getElementById('new-name').value = loc.name;
-        document.getElementById('new-addr').value = loc.addr;
-        document.getElementById('new-cat').value = loc.cat;
-        document.getElementById('new-open').value = loc.open || "08:00";
-        document.getElementById('new-close').value = loc.close || "17:00";
-        document.getElementById('admin-submit-btn').innerHTML = "💾 Update Site";
-        document.getElementById('admin-cancel-btn').style.display = "block";
-        if (document.getElementById('sidebar').classList.contains('closed')) toggleSidebar();
-        document.getElementById('admin-section').scrollTop = 0;
-    }
-
-    function clearAdminForm() {
-        editingIndex = -1;
-        document.getElementById('admin-panel-title').innerText = "Add New Site";
-        document.getElementById('new-name').value = "";
-        document.getElementById('new-addr').value = "";
-        document.getElementById('new-cat').value = "Medical";
-        document.getElementById('new-open').value = "";
-        document.getElementById('new-close').value = "";
-        document.getElementById('admin-submit-btn').innerHTML = "＋ Add Site";
-        document.getElementById('admin-cancel-btn').style.display = "none";
-    }
-
-    function saveSite() {
-        const name = document.getElementById('new-name').value;
-        const addr = document.getElementById('new-addr').value;
-        const cat = document.getElementById('new-cat').value;
-        const open = document.getElementById('new-open').value;
-        const close = document.getElementById('new-close').value;
-
-        if(!name) return alert("Please enter a name");
-
-        if (editingIndex > -1) {
-            locations[editingIndex].name = name;
-            locations[editingIndex].addr = addr;
-            locations[editingIndex].cat = cat;
-            locations[editingIndex].open = open;
-            locations[editingIndex].close = close;
-        } else {
-            locations.push({
-                name, addr, cat,
-                lat: map.getCenter().lat, lng: map.getCenter().lng, services: [cat],
-                open: open || "08:00", close: close || "17:00"
-            });
-        }
-
-        localStorage.setItem('altamed_locations', JSON.stringify(locations));
-        clearAdminForm();
-        updateMap();
-    }
-
-    function deleteLocation(index) {
-        if(confirm(`Are you sure you want to delete "${locations[index].name}"?`)) {
-            if (editingIndex === index) clearAdminForm();
-            locations.splice(index, 1);
-            localStorage.setItem('altamed_locations', JSON.stringify(locations));
-            updateMap();
-        }
-    }
-
-    function exportLocations() {
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(locations));
-        const downloadAnchorNode = document.createElement('a');
-        downloadAnchorNode.setAttribute("href", dataStr);
-        downloadAnchorNode.setAttribute("download", "altamed_locations.json");
-        document.body.appendChild(downloadAnchorNode);
-        downloadAnchorNode.click();
-        downloadAnchorNode.remove();
-    }
-
-    function resetLocations() {
-        if(confirm("Reset all custom sites and positions?")) {
-            localStorage.removeItem('altamed_locations');
-            locations = [...defaultLocations];
-            clearAdminForm();
-            updateMap();
-        }
-    }
-
-    function toggleLock() {
-        if (!isUnlocked) {
-            const pw = prompt("Enter Admin Password:");
-            if (pw !== "!Lgc1527D!") return pw !== null ? alert("Incorrect password.") : null;
-        }
-        isUnlocked = !isUnlocked;
-        if (!isUnlocked) clearAdminForm(); 
-        
-        document.getElementById('admin-section').style.display = isUnlocked ? 'block' : 'none';
-        document.getElementById('lock-btn').classList.toggle('unlocked', isUnlocked);
-        document.getElementById('lock-btn').innerHTML = isUnlocked ? "<span>🔓</span> Edit Mode" : "<span>🔒</span> Unlock";
-        updateMap();
+            const div = document.createElement('div');
+            div.className = 'list-item';
+            div.innerHTML = `<strong>${loc.name}</strong><br><small>${loc.addr}</small>`;
+            div.onclick = () => map.setView([loc.lat, loc.lng], 15);
+            listContainer.appendChild(div);
+        });
     }
 
     function toggleSatellite() {
         if (map.hasLayer(streetLayer)) { map.removeLayer(streetLayer); map.addLayer(satLayer); }
         else { map.removeLayer(satLayer); map.addLayer(streetLayer); }
     }
-    
+
+    function locateUser() {
+        map.locate({setView: true, maxZoom: 14});
+        map.on('locationfound', (e) => { userLatLng = e.latlng; updateMap(); });
+    }
+
     function toggleSidebar() { document.getElementById('sidebar').classList.toggle('closed'); }
-    
-function locateUser() { 
-    // Show a loading state so you know the button was pressed
-    const locBtn = document.getElementById('loc-btn');
-    const originalText = locBtn.innerHTML;
-    locBtn.innerHTML = "<span>⌛</span> Searching...";
 
-    map.locate({setView: true, maxZoom: 14, enableHighAccuracy: true}); 
-
-    map.on('locationfound', (e) => {
-        userLatLng = e.latlng;
-        locBtn.innerHTML = originalText; // Reset button
-        updateMap(); // Re-sort list based on distance
-    });
-
-    map.on('locationerror', (e) => {
-        locBtn.innerHTML = originalText; // Reset button
-        alert("Location Access Denied: " + e.message + 
-              "\n\nNote: GPS requires an HTTPS connection on mobile.");
-    });
-}
-
-    if (window.innerWidth <= 1024) document.getElementById('sidebar').classList.add('closed');
-    updateMap();
+    // Initial load
+    window.onload = updateMap;
 </script>
 </body>
 </html>
