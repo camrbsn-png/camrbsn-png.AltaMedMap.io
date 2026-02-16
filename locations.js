@@ -519,8 +519,8 @@ const defaultLocations = [
     {
         "name": "San Antonio Regional Hospital",
         "company": "San Antonio Regional Hospital",
-        "lat": 34.1035,
-        "lng": -117.6534,
+        "lat": 34.101611,
+		"lng": -117.638866,
         "addr": "999 San Bernardino Rd, Upland, CA 91786",
         "cat": "Admin",
         "open": "00:00",
@@ -530,8 +530,8 @@ const defaultLocations = [
     {
         "name": "TD SYNNEX",
         "company": "Pickup/Deliveries",
-        "lat": 33.9931,
-        "lng": -117.6892,
+        "lat": 33.979230,
+		"lng": -117.618728,
         "addr": "15065 Flight Ave, Chino, CA 91708",
         "cat": "Admin",
         "open": "08:00",
@@ -548,5 +548,16 @@ const defaultLocations = [
         "open": "08:30",
         "close": "17:30",
         "services": ["Technology Solutions", "Logistics", "Distribution"]
-    }
+    },
+	{
+    "name": "East Valley Community Health",
+    "company": "East Valley",
+    "lat": 34.067330,
+    "lng": -117.925261,
+    "addr": "420 S Glendora Ave, West Covina, CA 91790",
+    "cat": "Medical",
+    "open": "08:00",
+    "close": "19:00",
+    "services": ["Pharmacy", "Medical"]
+},
 ];
