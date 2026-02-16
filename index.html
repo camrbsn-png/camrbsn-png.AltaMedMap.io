@@ -143,7 +143,6 @@
     const satLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}');
     const map = L.map('map', { zoomControl: false, layers: [streetLayer] }).setView([34.0522, -118.2437], 10);
 
-    // Sidebar closes when clicking the map on mobile
     map.on('mousedown', function() {
         if (window.innerWidth <= 1024) {
             document.getElementById('sidebar').classList.add('closed');
@@ -217,16 +216,17 @@
         filtered.forEach(loc => {
             const statusHtml = getOpenStatus(loc.open, loc.close);
             const dist = userLatLng ? (map.distance(userLatLng, [loc.lat, loc.lng]) * 0.000621371).toFixed(1) + " mi" : "";
-            
-            // 1. Create Map Marker & Popup
+            const servicesText = loc.services ? loc.services.join(', ') : '';
+
+            // 1. Map Marker & Popup
             const m = L.marker([loc.lat, loc.lng], { icon: getCustomIcon(loc) }).addTo(map);
             
-            // Re-added the styled popup with the directions button
             m.bindPopup(`
-                <div style="font-family: sans-serif; min-width:200px;">
-                    <strong style="font-size:1.1em;">${loc.name}</strong><br>
+                <div style="font-family: sans-serif; min-width:200px; padding:5px;">
+                    <strong style="font-size:1.1em; color:var(--lexi-blue);">${loc.name}</strong><br>
+                    <div style="font-size:0.85em; font-weight:bold; color:#444; margin-bottom:4px;">${loc.cat} ${servicesText ? '• ' + servicesText : ''}</div>
                     <div style="margin: 4px 0;">${statusHtml}</div>
-                    <div style="color:#666; margin-bottom:8px;">${loc.addr}</div>
+                    <div style="color:#666; margin-bottom:8px; font-size:0.9em;">${loc.addr}</div>
                     <hr style="border:0; border-top:1px solid #eee; margin:10px 0;">
                     <a href="https://www.google.com/maps/dir/?api=1&destination=${loc.lat},${loc.lng}" 
                        target="_blank" 
@@ -237,14 +237,15 @@
             `);
             markers.push(m);
 
-            // 2. Create Sidebar List Item
+            // 2. Sidebar List Item
             const div = document.createElement('div');
             div.className = 'list-item';
             div.innerHTML = `
                 <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                    <strong>${loc.name}</strong>
+                    <strong style="color:var(--lexi-blue);">${loc.name}</strong>
                     <span style="font-size:0.8em; color:var(--lexi-blue); font-weight:bold;">${dist}</span>
                 </div>
+                <div style="font-size:0.75em; font-weight:bold; color:#555; margin: 2px 0;">${loc.cat} ${servicesText ? '• ' + servicesText : ''}</div>
                 <small style="color:#666;">${loc.addr}</small><br>
                 <div style="margin-top:4px;">${statusHtml}</div>
             `;
