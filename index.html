@@ -94,6 +94,8 @@
 <div id="map-container">
     <div id="map"></div>
     <div id="control-panel">
+        <button id="clear-btn" class="btn" style="background:var(--pickup-orange)" onclick="resetLocations()">🗑️ Clear Cache</button>
+        
         <button id="sat-btn" class="btn" style="background:#636e72" onclick="toggleSatellite()">🛰️ Satellite</button>
         <button id="loc-btn" class="btn" style="background:#6c5ce7" onclick="locateUser()">📍 Find Me</button>
     </div>
@@ -191,6 +193,13 @@
     }
 
     window.onload = updateMap;
+    function resetLocations() {
+    if(confirm("Are you sure you want to clear the local cache and reset all site data?")) {
+        localStorage.removeItem('altamed_locations');
+        // This reloads the page to fetch fresh data from your .js file
+        location.reload();
+    }
+}
 </script>
 </body>
 </html>
