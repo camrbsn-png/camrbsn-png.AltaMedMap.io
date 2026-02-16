@@ -45,15 +45,26 @@
         .custom-pin { display: flex; align-items: center; justify-content: center; border-radius: 50% 50% 50% 0; border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3); color: white; width: 35px; height: 35px; transform: rotate(-45deg); }
         .pin-content { transform: rotate(45deg); font-size: 1.2rem; }
 
-        #control-panel { position: absolute; bottom: 40px; right: 20px; z-index: 8000; display: flex; flex-direction: column; gap: 10px; }
+        /* FIXED: Added padding-bottom for mobile safe areas */
+        #control-panel { 
+            position: absolute; 
+            bottom: 0; 
+            right: 20px; 
+            z-index: 8000; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 10px; 
+            padding-bottom: calc(20px + env(safe-area-inset-bottom)); 
+        }
         .btn { padding: 14px; border: none; border-radius: 12px; font-weight: 700; color: white; box-shadow: 0 6px 15px rgba(0,0,0,0.3); width: 140px; cursor: pointer; }
     </style>
 </head>
 <body>
 
 <div id="sidebar">
-    <div style="background:var(--lexi-blue); color:white; padding:20px;">
+    <div style="background:var(--lexi-blue); color:white; padding:20px; display:flex; justify-content:space-between; align-items:center;">
         <h2 style="margin:0; font-size:1.2rem;">LexiGlobal Directory</h2>
+        <span onclick="toggleSidebar()" style="cursor:pointer; font-size:1.5rem;" class="mobile-only">✕</span>
     </div>
 
     <div id="filter-section">
@@ -63,7 +74,6 @@
             <label class="filter-chip"><input type="checkbox" class="company-filter" value="Pickup/Deliveries" onchange="toggleFilterState()"> Pickup/Deliveries</label>
             <label class="filter-chip"><input type="checkbox" class="company-filter" value="East Valley" onchange="toggleFilterState()"> East Valley</label>
             <label class="filter-chip"><input type="checkbox" class="company-filter" value="San Antonio Regional Hospital" onchange="toggleFilterState()"> San Antonio</label>
-
         </div>
 
         <div id="altamed-sub-section" style="display:none; margin-top:15px; padding-top:10px; border-top:1px dashed #ccc;">
@@ -91,6 +101,7 @@
         <button class="btn" style="background:var(--pickup-orange)" onclick="resetLocations()">🗑️ Clear Cache</button>
         <button class="btn" style="background:#636e72" onclick="toggleSatellite()">🛰️ Satellite</button>
         <button id="loc-btn" class="btn" style="background:#6c5ce7" onclick="locateUser()">📍 Find Me</button>
+        <button class="btn" style="background:var(--lexi-blue)" onclick="toggleSidebar()">📂 Menu</button>
     </div>
 </div>
 
@@ -104,10 +115,20 @@
     const satLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}');
     const map = L.map('map', { zoomControl: false, layers: [streetLayer] }).setView([34.0522, -118.2437], 10);
 
+    // FIXED: Sidebar closes when clicking the map on mobile
+    map.on('mousedown', function() {
+        if (window.innerWidth <= 1024) {
+            document.getElementById('sidebar').classList.add('closed');
+        }
+    });
+
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('closed');
+    }
+
     function getCustomIcon(loc) {
         let color = '#1abc9c';
         let icon = '🏥';
-
         if (loc.company === 'Pickup/Deliveries') { color = '#e67e22'; icon = '📦'; }
         else if (loc.company === 'East Valley') { color = '#e74c3c'; icon = '🏨'; }
         else if (loc.company === 'San Antonio Regional Hospital') { color = '#2980b9'; icon = '🏥'; }
@@ -137,81 +158,48 @@
         const [closeH, closeM] = closeTime.split(':').map(Number);
         const openVal = openH * 100 + openM;
         const closeVal = closeH * 100 + closeM;
-
         const isOpen = currentTime >= openVal && currentTime < closeVal;
         return isOpen ? 
             `<span style="color:var(--lexi-turquoise); font-weight:bold;">● Open</span> <span style="font-size:0.8em; color:#666;">(Closes ${closeTime})</span>` : 
             `<span style="color:var(--hospital-red); font-weight:bold;">○ Closed</span> <span style="font-size:0.8em; color:#666;">(Opens ${openTime})</span>`;
     }
 
-  function updateMap() {
+    function updateMap() {
         markers.forEach(m => map.removeLayer(m));
         markers = [];
         const listContainer = document.getElementById('location-list');
         listContainer.innerHTML = '';
-
         const searchQuery = document.getElementById('site-search').value.toLowerCase();
         const checkedCompanies = Array.from(document.querySelectorAll('.company-filter:checked')).map(cb => cb.value);
         const checkedCats = Array.from(document.querySelectorAll('.cat-filter:checked')).map(cb => cb.value);
 
         if (checkedCompanies.length === 0 || typeof defaultLocations === 'undefined') return;
 
-        // Filter and Sort by distance if user location is known
         let filtered = defaultLocations.filter(loc => {
             const matchesCompany = checkedCompanies.includes(loc.company);
             const matchesCat = loc.company !== "AltaMed" || checkedCats.includes(loc.cat);
-            const matchesSearch = loc.name.toLowerCase().includes(searchQuery) || 
-                                 loc.addr.toLowerCase().includes(searchQuery) ||
-                                 (loc.services && loc.services.join(' ').toLowerCase().includes(searchQuery));
+            const matchesSearch = loc.name.toLowerCase().includes(searchQuery) || loc.addr.toLowerCase().includes(searchQuery);
             return matchesCompany && matchesCat && matchesSearch;
         });
 
         if (userLatLng) {
-            filtered.sort((a, b) => {
-                const distA = map.distance(userLatLng, [a.lat, a.lng]);
-                const distB = map.distance(userLatLng, [b.lat, b.lng]);
-                return distA - distB;
-            });
+            filtered.sort((a, b) => map.distance(userLatLng, [a.lat, a.lng]) - map.distance(userLatLng, [b.lat, b.lng]));
         }
 
         filtered.forEach(loc => {
             const statusHtml = getOpenStatus(loc.open, loc.close);
-            const servicesHtml = loc.services ? `<div style="margin-top:5px; font-size:0.85em; color:#555;"><b>Services:</b> ${loc.services.join(', ')}</div>` : "";
             const dist = userLatLng ? (map.distance(userLatLng, [loc.lat, loc.lng]) * 0.000621371).toFixed(1) + " mi" : "";
-
-            // 1. Create Map Marker & Detailed Popup
             const m = L.marker([loc.lat, loc.lng], { icon: getCustomIcon(loc) }).addTo(map);
-            m.bindPopup(`
-                <div style="font-family: sans-serif; min-width:200px;">
-                    <strong style="font-size:1.1em;">${loc.name}</strong><br>
-                    <div style="margin: 4px 0;">${statusHtml}</div>
-                    <div style="color:#666; margin-bottom:8px;">${loc.addr}</div>
-                    ${servicesHtml}
-                    <hr style="border:0; border-top:1px solid #eee; margin:10px 0;">
-                    <a href="https://www.google.com/maps/dir/?api=1&destination=${loc.lat},${loc.lng}" 
-                       target="_blank" 
-                       style="display:block; text-align:center; background:var(--lexi-blue); color:white; padding:8px; border-radius:5px; text-decoration:none; font-weight:bold;">
-                       🚗 Get Directions ${dist ? '('+dist+')' : ''}
-                    </a>
-                </div>
-            `);
+            m.bindPopup(`<b>${loc.name}</b><br>${loc.addr}<br>${statusHtml}`);
             markers.push(m);
 
-            // 2. Create Sidebar List Item
             const div = document.createElement('div');
             div.className = 'list-item';
-            div.innerHTML = `
-                <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                    <strong>${loc.name}</strong>
-                    <span style="font-size:0.8em; color:var(--lexi-blue); font-weight:bold;">${dist}</span>
-                </div>
-                <div style="font-size:0.9em; margin:3px 0;">${statusHtml}</div>
-                <small style="color:#666;">${loc.addr}</small>
-                <div style="font-size:0.75em; color:#888; margin-top:4px;">${loc.cat} ${loc.services ? '• ' + loc.services.slice(0,3).join(', ') : ''}</div>
-            `;
+            div.innerHTML = `<strong>${loc.name}</strong><br><small>${loc.addr}</small><br>${statusHtml}`;
             div.onclick = () => {
                 map.flyTo([loc.lat, loc.lng], 15);
                 m.openPopup();
+                if (window.innerWidth <= 1024) toggleSidebar(); // Close sidebar on selection
             };
             listContainer.appendChild(div);
         });
