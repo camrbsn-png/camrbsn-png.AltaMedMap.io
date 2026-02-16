@@ -126,7 +126,22 @@
         updateMap();
     }
 
-    function updateMap() {
+    function getOpenStatus(openTime, closeTime) {
+        if (!openTime || !closeTime) return "";
+        const now = new Date();
+        const currentTime = now.getHours() * 100 + now.getMinutes();
+        const [openH, openM] = openTime.split(':').map(Number);
+        const [closeH, closeM] = closeTime.split(':').map(Number);
+        const openVal = openH * 100 + openM;
+        const closeVal = closeH * 100 + closeM;
+
+        const isOpen = currentTime >= openVal && currentTime < closeVal;
+        return isOpen ? 
+            `<span style="color:var(--lexi-turquoise); font-weight:bold;">● Open</span> <span style="font-size:0.8em; color:#666;">(Closes ${closeTime})</span>` : 
+            `<span style="color:var(--hospital-red); font-weight:bold;">○ Closed</span> <span style="font-size:0.8em; color:#666;">(Opens ${openTime})</span>`;
+    }
+
+  function updateMap() {
         markers.forEach(m => map.removeLayer(m));
         markers = [];
         const listContainer = document.getElementById('location-list');
@@ -138,22 +153,63 @@
 
         if (checkedCompanies.length === 0 || typeof defaultLocations === 'undefined') return;
 
-        const filtered = defaultLocations.filter(loc => {
+        // Filter and Sort by distance if user location is known
+        let filtered = defaultLocations.filter(loc => {
             const matchesCompany = checkedCompanies.includes(loc.company);
             const matchesCat = loc.company !== "AltaMed" || checkedCats.includes(loc.cat);
-            const matchesSearch = loc.name.toLowerCase().includes(searchQuery) || loc.addr.toLowerCase().includes(searchQuery);
+            const matchesSearch = loc.name.toLowerCase().includes(searchQuery) || 
+                                 loc.addr.toLowerCase().includes(searchQuery) ||
+                                 (loc.services && loc.services.join(' ').toLowerCase().includes(searchQuery));
             return matchesCompany && matchesCat && matchesSearch;
         });
 
+        if (userLatLng) {
+            filtered.sort((a, b) => {
+                const distA = map.distance(userLatLng, [a.lat, a.lng]);
+                const distB = map.distance(userLatLng, [b.lat, b.lng]);
+                return distA - distB;
+            });
+        }
+
         filtered.forEach(loc => {
+            const statusHtml = getOpenStatus(loc.open, loc.close);
+            const servicesHtml = loc.services ? `<div style="margin-top:5px; font-size:0.85em; color:#555;"><b>Services:</b> ${loc.services.join(', ')}</div>` : "";
+            const dist = userLatLng ? (map.distance(userLatLng, [loc.lat, loc.lng]) * 0.000621371).toFixed(1) + " mi" : "";
+
+            // 1. Create Map Marker & Detailed Popup
             const m = L.marker([loc.lat, loc.lng], { icon: getCustomIcon(loc) }).addTo(map);
-            m.bindPopup(`<b>${loc.name}</b><br>${loc.addr}`);
+            m.bindPopup(`
+                <div style="font-family: sans-serif; min-width:200px;">
+                    <strong style="font-size:1.1em;">${loc.name}</strong><br>
+                    <div style="margin: 4px 0;">${statusHtml}</div>
+                    <div style="color:#666; margin-bottom:8px;">${loc.addr}</div>
+                    ${servicesHtml}
+                    <hr style="border:0; border-top:1px solid #eee; margin:10px 0;">
+                    <a href="https://www.google.com/maps/dir/?api=1&destination=${loc.lat},${loc.lng}" 
+                       target="_blank" 
+                       style="display:block; text-align:center; background:var(--lexi-blue); color:white; padding:8px; border-radius:5px; text-decoration:none; font-weight:bold;">
+                       🚗 Get Directions ${dist ? '('+dist+')' : ''}
+                    </a>
+                </div>
+            `);
             markers.push(m);
 
+            // 2. Create Sidebar List Item
             const div = document.createElement('div');
             div.className = 'list-item';
-            div.innerHTML = `<strong>${loc.name}</strong><br><small>${loc.addr}</small>`;
-            div.onclick = () => map.flyTo([loc.lat, loc.lng], 15);
+            div.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                    <strong>${loc.name}</strong>
+                    <span style="font-size:0.8em; color:var(--lexi-blue); font-weight:bold;">${dist}</span>
+                </div>
+                <div style="font-size:0.9em; margin:3px 0;">${statusHtml}</div>
+                <small style="color:#666;">${loc.addr}</small>
+                <div style="font-size:0.75em; color:#888; margin-top:4px;">${loc.cat} ${loc.services ? '• ' + loc.services.slice(0,3).join(', ') : ''}</div>
+            `;
+            div.onclick = () => {
+                map.flyTo([loc.lat, loc.lng], 15);
+                m.openPopup();
+            };
             listContainer.appendChild(div);
         });
     }
