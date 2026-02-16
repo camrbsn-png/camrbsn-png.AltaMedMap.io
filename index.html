@@ -1,30 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="icon" type="image/svg+xml" href="icon.svg">
+    <link rel="apple-touch-icon" href="icon.svg">
 
-<link rel="icon" type="image/svg+xml" href="icon.svg">
-<link rel="apple-touch-icon" href="icon.svg">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="LexiGlobal">
 
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="LexiGlobal">
-
-<style>
-    :root {
-        --sat: env(safe-area-inset-top);
-        --sar: env(safe-area-inset-right);
-        --sab: env(safe-area-inset-bottom);
-        --sal: env(safe-area-inset-left);
-    }
-</style>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>LexiGlobal Directory</title>
-    
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    
     <style>
-        :root { 
+        :root {
+            --sat: env(safe-area-inset-top);
+            --sar: env(safe-area-inset-right);
+            --sab: env(safe-area-inset-bottom);
+            --sal: env(safe-area-inset-left);
             --lexi-blue: #0984e3;
             --lexi-turquoise: #1abc9c; 
             --pace-purple: #9b59b6;
@@ -32,60 +21,62 @@
             --pickup-orange: #e67e22;
             --hospital-red: #e74c3c;
         }
+
+        html, body { 
+            height: 100%; 
+            height: 100dvh; 
+            width: 100%; 
+            margin: 0; 
+            padding: 0; 
+            overflow: hidden; 
+            position: fixed; 
+        }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            display: flex; 
+            flex-direction: row; 
+        }
         
-    html, body { 
-        height: 100%; 
-        height: 100dvh; 
-        width: 100%; 
-        margin: 0; 
-        padding: 0; 
-        overflow: hidden; 
-        position: fixed; 
-    }
-    body { 
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-        display: flex; 
-        flex-direction: row; 
-    }
-    
-    #sidebar { width: 350px; min-width: 350px; background: #fff; z-index: 9999; display: flex; flex-direction: column; box-shadow: 2px 0 15px rgba(0,0,0,0.1); transition: transform 0.3s ease; }
-    #map-container { flex-grow: 1; position: relative; height: 100%; }
-    #map { height: 100%; width: 100%; background: #f0f0f0; }
+        #sidebar { width: 350px; min-width: 350px; background: #fff; z-index: 9999; display: flex; flex-direction: column; box-shadow: 2px 0 15px rgba(0,0,0,0.1); transition: transform 0.3s ease; }
+        #map-container { flex-grow: 1; position: relative; height: 100%; }
+        #map { height: 100%; width: 100%; background: #f0f0f0; }
 
-    @media (max-width: 1024px) {
-        #sidebar { position: absolute; left: 0; top: 0; height: 100%; width: 85%; max-width: 320px; transform: translateX(0); }
-        #sidebar.closed { transform: translateX(-100%); }
-    }
+        @media (max-width: 1024px) {
+            #sidebar { position: absolute; left: 0; top: 0; height: 100%; width: 85%; max-width: 320px; transform: translateX(0); }
+            #sidebar.closed { transform: translateX(-100%); }
+        }
 
-    #filter-section { padding: 15px; background: #f8f9fa; border-bottom: 1px solid #eee; }
-    .filter-row { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 8px; }
-    .filter-chip { display: flex; align-items: center; gap: 4px; font-size: 0.75rem; cursor: pointer; background: white; padding: 6px 10px; border-radius: 20px; border: 1px solid #ddd; }
-    .filter-chip:has(input:checked) { background: var(--lexi-blue); color: white; border-color: var(--lexi-blue); }
-    .filter-chip input { display: none; }
+        #filter-section { padding: 15px; background: #f8f9fa; border-bottom: 1px solid #eee; }
+        .filter-row { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 8px; }
+        .filter-chip { display: flex; align-items: center; gap: 4px; font-size: 0.75rem; cursor: pointer; background: white; padding: 6px 10px; border-radius: 20px; border: 1px solid #ddd; }
+        .filter-chip:has(input:checked) { background: var(--lexi-blue); color: white; border-color: var(--lexi-blue); }
+        .filter-chip input { display: none; }
 
-    #search-sticky-section { padding: 15px; background: white; border-bottom: 1px solid #eee; }
-    .search-box { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; box-sizing: border-box; }
+        #search-sticky-section { padding: 15px; background: white; border-bottom: 1px solid #eee; position: relative; }
+        .search-box { width: 100%; padding: 12px; padding-right: 40px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; box-sizing: border-box; }
+        .clear-search { position: absolute; right: 25px; top: 25px; color: #ccc; cursor: pointer; display: none; font-size: 1.2rem; }
 
-    .content { overflow-y: auto; flex-grow: 1; display: none; }
-    .list-item { padding: 16px; border-bottom: 1px solid #f0f0f0; cursor: pointer; }
-    .list-item:hover { background: #f8f9fb; border-left: 4px solid var(--lexi-blue); }
+        .content { overflow-y: auto; flex-grow: 1; display: none; }
+        .list-item { padding: 16px; border-bottom: 1px solid #f0f0f0; cursor: pointer; position: relative; }
+        .list-item:hover { background: #f8f9fb; border-left: 4px solid var(--lexi-blue); }
+        .copy-badge { position: absolute; right: 10px; bottom: 10px; font-size: 0.7rem; color: var(--lexi-blue); opacity: 0.6; }
 
-    .custom-pin { display: flex; align-items: center; justify-content: center; border-radius: 50% 50% 50% 0; border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3); color: white; width: 35px; height: 35px; transform: rotate(-45deg); }
-    .pin-content { transform: rotate(45deg); font-size: 1.2rem; }
+        .custom-pin { display: flex; align-items: center; justify-content: center; border-radius: 50% 50% 50% 0; border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3); color: white; width: 35px; height: 35px; transform: rotate(-45deg); }
+        .pin-content { transform: rotate(45deg); font-size: 1.2rem; }
 
-    /* FIXED: Positioned slightly higher and added safe-area-inset */
-    #control-panel { 
-        position: absolute; 
-        bottom: 15px; /* Base lift from the bottom */
-        right: 15px; 
-        z-index: 8000; 
-        display: flex; 
-        flex-direction: column; 
-        gap: 10px; 
-        padding-bottom: env(safe-area-inset-bottom); /* Specifically for iPhone home bar */
-    }
-    .btn { padding: 14px; border: none; border-radius: 12px; font-weight: 700; color: white; box-shadow: 0 6px 15px rgba(0,0,0,0.3); width: 140px; cursor: pointer; }
-</style>
+        #control-panel { 
+            position: absolute; 
+            bottom: 15px; 
+            right: 15px; 
+            z-index: 8000; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 10px; 
+            padding-bottom: env(safe-area-inset-bottom); 
+        }
+        .btn { padding: 14px; border: none; border-radius: 12px; font-weight: 700; color: white; box-shadow: 0 6px 15px rgba(0,0,0,0.3); width: 140px; cursor: pointer; transition: 0.2s; }
+        .btn:active { transform: scale(0.95); }
+    </style>
 </head>
 <body>
 
@@ -115,7 +106,8 @@
     </div>
 
     <div id="search-sticky-section">
-        <input type="text" id="site-search" class="search-box" placeholder="Search..." onkeyup="updateMap()">
+        <input type="text" id="site-search" class="search-box" placeholder="Search locations..." onkeyup="handleSearch(this.value)">
+        <span id="clear-search-btn" class="clear-search" onclick="clearSearch()">✕</span>
     </div>
 
     <div class="content" id="sidebar-list">
@@ -148,6 +140,23 @@
             document.getElementById('sidebar').classList.add('closed');
         }
     });
+
+    function handleSearch(val) {
+        document.getElementById('clear-search-btn').style.display = val.length > 0 ? 'block' : 'none';
+        updateMap();
+    }
+
+    function clearSearch() {
+        document.getElementById('site-search').value = '';
+        handleSearch('');
+    }
+
+    function copyToClipboard(text, e) {
+        e.stopPropagation(); // Prevents map from flying to location
+        navigator.clipboard.writeText(text).then(() => {
+            alert('Address copied to clipboard!');
+        });
+    }
 
     function toggleSidebar() {
         document.getElementById('sidebar').classList.toggle('closed');
@@ -248,6 +257,7 @@
                 <div style="font-size:0.75em; font-weight:bold; color:#555; margin: 2px 0;">${loc.cat} ${servicesText ? '• ' + servicesText : ''}</div>
                 <small style="color:#666;">${loc.addr}</small><br>
                 <div style="margin-top:4px;">${statusHtml}</div>
+                <div class="copy-badge" onclick="copyToClipboard('${loc.addr}', event)">📋 Copy</div>
             `;
             div.onclick = () => {
                 map.flyTo([loc.lat, loc.lng], 15);
@@ -271,8 +281,18 @@
     }
 
     function locateUser() {
+        const btn = document.getElementById('loc-btn');
+        btn.innerText = "⏳ Locating...";
         map.locate({setView: true, maxZoom: 14});
-        map.on('locationfound', (e) => { userLatLng = e.latlng; updateMap(); });
+        map.on('locationfound', (e) => { 
+            userLatLng = e.latlng; 
+            btn.innerText = "📍 Find Me";
+            updateMap(); 
+        });
+        map.on('locationerror', () => {
+            alert("Location access denied.");
+            btn.innerText = "📍 Find Me";
+        });
     }
 
     window.onload = toggleFilterState;
