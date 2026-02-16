@@ -515,7 +515,7 @@ const defaultLocations = [
         "open": "08:00",
         "close": "17:00",
         "services": ["Medical", "Dental"]
-    }
+    },
     {
         "name": "San Antonio Regional Hospital",
         "company": "San Antonio Regional Hospital",
