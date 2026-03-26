@@ -11,6 +11,17 @@ const defaultLocations = [
         "services": ["Medical", "Dental", "PACE", "Urgent Care"]
     },
     {
+    "name": "AltaMed Brady",
+    "addr": "6201 Whittier Blvd, East Los Angeles, CA 90022",
+    "company": "AltaMed",
+    "cat": "Medical",
+    "lat": 34.016495,
+    "lng": -118.137016,
+    "open": "08:00",
+    "close": "17:00",
+    "services": ["Medical"]
+},
+    {
         "name": "AltaMed Pasadena Del Mar",
         "addr": "3160 E Del Mar Blvd, Pasadena, CA 91107",
         "company": "AltaMed",
