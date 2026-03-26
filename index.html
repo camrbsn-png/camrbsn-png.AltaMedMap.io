@@ -174,7 +174,7 @@
 
         let filtered = defaultLocations.filter(loc => {
             const matchesCompany = checkedCompanies.includes(loc.company);
-            const matchesCat = loc.company !== "AltaMed" || checkedCats.includes(loc.cat);
+            const matchesCat = checkedCats.includes(loc.cat);
             const matchesSearch = loc.name.toLowerCase().includes(searchQuery) || loc.addr.toLowerCase().includes(searchQuery);
             return matchesCompany && matchesCat && matchesSearch;
         });
