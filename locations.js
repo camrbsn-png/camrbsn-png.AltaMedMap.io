@@ -1,6 +1,6 @@
 const defaultLocations = [
     {
-        "name": "Anaheim Medical",
+        "name": "AltaMed Anaheim Medical",
         "company": "AltaMed",
         "lat": 33.85327008648436,
         "lng": -117.92078197002412,
@@ -10,8 +10,60 @@ const defaultLocations = [
         "close": "17:00",
         "services": ["Medical", "Dental", "PACE", "Urgent Care"]
     },
+	{
+    "name": "AltaMed Pasadena Del Mar",
+    "addr": "3160 E Del Mar Blvd, Pasadena, CA 91107",
+    "company": "AltaMed",
+    "cat": "Medical",
+    "lat": 34.141872,
+    "lng": -118.08539,
+    "open": "08:00",
+    "close": "17:00",
+    "services": [
+        "General"
+    ]
+},
+	{
+    "name": "AltaMed William Mead",
+    "addr": "268 E Bloom St, Los Angeles, CA 90012",
+    "company": "AltaMed",
+    "cat": "Medical",
+    "lat": 34.063606,
+    "lng": -118.229617,
+    "open": "08:00",
+    "close": "17:00",
+    "services": [
+        "General"
+    ]
+},
+	{
+    "name": "AltaMed Santa Ana Bristol",
+    "addr": "2720 S Bristol St, Santa Ana, CA 92704",
+    "company": "AltaMed",
+    "cat": "Medical",
+    "lat": 33.710369,
+    "lng": -117.886182,
+    "open": "08:00",
+    "close": "17:00",
+    "services": [
+        "General"
+    ]
+},
+{
+    "name": "AltaMed El Monte Valley",
+    "addr": "10418 Valley Blvd, El Monte, CA 91731",
+    "company": "AltaMed",
+    "cat": "Medical",
+    "lat": 34.076177,
+    "lng": -118.045714,
+    "open": "08:00",
+    "close": "17:00",
+    "services": [
+        "General"
+    ]
+},
     {
-        "name": "Bell Gardens Viva Gold",
+        "name": "AltaMed Bell Gardens Viva Gold",
         "company": "AltaMed",
         "lat": 33.971512130752274,
         "lng": -118.16571056842805,
@@ -22,7 +74,7 @@ const defaultLocations = [
         "services": ["Medical", "Dental"]
     },
     {
-        "name": "Bellflower Viva Gold",
+        "name": "AltaMed Bellflower Viva Gold",
         "company": "AltaMed",
         "lat": 33.90161956331923,
         "lng": -118.1152528524399,
@@ -33,7 +85,7 @@ const defaultLocations = [
         "services": ["Medical"]
     },
     {
-        "name": "Bellflower-Pharmacy",
+        "name": "AltaMed Bellflower-Pharmacy",
         "company": "AltaMed",
         "lat": 33.90268814421278,
         "lng": -118.14076602458955,
@@ -44,7 +96,7 @@ const defaultLocations = [
         "services": ["Medical", "Pharmacy"]
     },
     {
-        "name": "CHLA PODS 1-4",
+        "name": "AltaMed CHLA PODS 1-4",
         "company": "AltaMed",
         "lat": 34.09791946832177,
         "lng": -118.29075515270235,
@@ -55,7 +107,7 @@ const defaultLocations = [
         "services": ["Medical"]
     },
     {
-        "name": "Compton PACE",
+        "name": "AltaMed Compton PACE",
         "company": "AltaMed",
         "lat": 33.888461563512024,
         "lng": -118.19528460502626,
@@ -66,7 +118,7 @@ const defaultLocations = [
         "services": ["PACE", "Medical"]
     },
     {
-        "name": "Corporate HQ",
+        "name": "AltaMed Corporate HQ",
         "company": "AltaMed",
         "lat": 34.007989,
         "lng": -118.155341,
@@ -77,7 +129,7 @@ const defaultLocations = [
         "services": ["Corporate"]
     },
     {
-        "name": "East LA 1st Street",
+        "name": "AltaMed East LA 1st Street",
         "company": "AltaMed",
         "lat": 34.04426770472888,
         "lng": -118.21177482604982,
@@ -88,7 +140,7 @@ const defaultLocations = [
         "services": ["Medical"]
     },
     {
-        "name": "East LA Boyle Heights",
+        "name": "AltaMed East LA Boyle Heights",
         "company": "AltaMed",
         "lat": 34.024200668439484,
         "lng": -118.18775832653047,
@@ -99,7 +151,7 @@ const defaultLocations = [
         "services": ["Medical", "Dental", "Pharmacy"]
     },
     {
-        "name": "East LA Commerce",
+        "name": "AltaMed East LA Commerce",
         "company": "AltaMed",
         "lat": 34.019905688344345,
         "lng": -118.15360307693483,
@@ -109,8 +161,21 @@ const defaultLocations = [
         "close": "17:00",
         "services": ["Medical", "Dental"]
     },
+	{
+    "name": "AltaMed Ramona Gardens",
+    "addr": "1424 Crusado Ln #168, Los Angeles, CA 90033",
+    "company": "AltaMed",
+    "cat": "Medical",
+    "lat": 34.057659,
+    "lng": -118.195155,
+    "open": "08:00",
+    "close": "17:00",
+    "services": [
+        "General"
+    ]
+},
     {
-        "name": "El Monte - Garvey Viva Gold",
+        "name": "AltaMed El Monte - Garvey Viva Gold",
         "company": "AltaMed",
         "lat": 34.062956807151224,
         "lng": -118.04825663566591,
@@ -121,7 +186,7 @@ const defaultLocations = [
         "services": ["Medical"]
     },
     {
-        "name": "El Monte - Peck Rd",
+        "name": "AltaMed El Monte - Peck Rd",
         "company": "AltaMed",
         "lat": 34.07327960260563,
         "lng": -118.0242294073105,
@@ -132,7 +197,7 @@ const defaultLocations = [
         "services": ["Medical"]
     },
     {
-        "name": "El Monte - Santa Anita",
+        "name": "AltaMed El Monte - Santa Anita",
         "company": "AltaMed",
         "lat": 34.06628085791001,
         "lng": -118.04220557212831,
@@ -143,7 +208,7 @@ const defaultLocations = [
         "services": ["Medical"]
     },
     {
-        "name": "Estrada Courts",
+        "name": "AltaMed Estrada Courts",
         "company": "AltaMed",
         "lat": 34.020853,
         "lng": -118.208152,
@@ -154,7 +219,7 @@ const defaultLocations = [
         "services": ["Medical"]
     },
     {
-        "name": "Fair Oaks",
+        "name": "AltaMed Fair Oaks",
         "company": "AltaMed",
         "lat": 34.177574481443166,
         "lng": -118.15104961395265,
@@ -165,7 +230,7 @@ const defaultLocations = [
         "services": ["Medical", "Dental"]
     },
     {
-        "name": "Garden Grove",
+        "name": "AltaMed Garden Grove",
         "company": "AltaMed",
         "lat": 33.77773386928829,
         "lng": -117.91554629802705,
@@ -176,7 +241,7 @@ const defaultLocations = [
         "services": ["Medical", "Dental"]
     },
     {
-        "name": "Goodrich",
+        "name": "AltaMed Goodrich",
         "company": "AltaMed",
         "lat": 34.018376160551945,
         "lng": -118.1539410352707,
@@ -187,7 +252,7 @@ const defaultLocations = [
         "services": ["Medical"]
     },
     {
-        "name": "HP Medical (Rugby)",
+        "name": "AltaMed HP Medical (Rugby)",
         "company": "AltaMed",
         "lat": 33.979132575171484,
         "lng": -118.22670936584474,
@@ -198,7 +263,7 @@ const defaultLocations = [
         "services": ["Medical"]
     },
     {
-        "name": "HP Medical (Slauson)",
+        "name": "AltaMed HP Medical (Slauson)",
         "company": "AltaMed",
         "lat": 33.98894517106316,
         "lng": -118.23693931102754,
@@ -209,7 +274,7 @@ const defaultLocations = [
         "services": ["Medical", "Dental", "Pharmacy"]
     },
     {
-        "name": "Huntington Beach - Main",
+        "name": "AltaMed Huntington Beach - Main",
         "company": "AltaMed",
         "lat": 33.680153,
         "lng": -118.000353,
@@ -220,7 +285,7 @@ const defaultLocations = [
         "services": ["Medical"]
     },
     {
-        "name": "Huntington Beach - Newman",
+        "name": "AltaMed Huntington Beach - Newman",
         "company": "AltaMed",
         "lat": 33.705071944479116,
         "lng": -117.98832535743715,
@@ -231,7 +296,7 @@ const defaultLocations = [
         "services": ["Medical", "Dental"]
     },
     {
-        "name": "Huntington Park Florence",
+        "name": "AltaMed Huntington Park Florence",
         "company": "AltaMed",
         "lat": 33.97461733299605,
         "lng": -118.24613392353059,
@@ -242,7 +307,7 @@ const defaultLocations = [
         "services": ["Medical"]
     },
     {
-        "name": "Huntington Park Seville",
+        "name": "AltaMed Huntington Park Seville",
         "company": "AltaMed",
         "lat": 33.968758282029576,
         "lng": -118.22261095046998,
@@ -253,7 +318,7 @@ const defaultLocations = [
         "services": ["Medical", "Dental"]
     },
     {
-        "name": "Indiana",
+        "name": "AltaMed Indiana",
         "company": "AltaMed",
         "lat": 34.03004255953751,
         "lng": -118.19211959838869,
@@ -264,7 +329,7 @@ const defaultLocations = [
         "services": ["Medical"]
     },
     {
-        "name": "Inglewood PACE",
+        "name": "AltaMed Inglewood PACE",
         "company": "AltaMed",
         "lat": 33.944499207394635,
         "lng": -118.32902491092683,
@@ -275,7 +340,7 @@ const defaultLocations = [
         "services": ["PACE", "Medical"]
     },
     {
-        "name": "Lake",
+        "name": "AltaMed Lake",
         "company": "AltaMed",
         "lat": 34.17347368294868,
         "lng": -118.13228487968445,
@@ -286,7 +351,7 @@ const defaultLocations = [
         "services": ["Medical"]
     },
     {
-        "name": "Lime",
+        "name": "AltaMed Lime",
         "company": "AltaMed",
         "lat": 34.14843407544131,
         "lng": -117.99315869808198,
@@ -297,7 +362,7 @@ const defaultLocations = [
         "services": ["Medical"]
     },
     {
-        "name": "Lincoln",
+        "name": "AltaMed Lincoln",
         "company": "AltaMed",
         "lat": 34.18103603933744,
         "lng": -118.15998673439027,
@@ -308,7 +373,7 @@ const defaultLocations = [
         "services": ["Medical"]
     },
     {
-        "name": "Logistics Warehouse",
+        "name": "AltaMed Logistics Warehouse",
         "company": "AltaMed",
         "lat": 34.012115,
         "lng": -118.154397,
@@ -319,7 +384,7 @@ const defaultLocations = [
         "services": ["Corporate"]
     },
     {
-        "name": "Lynwood PACE",
+        "name": "AltaMed Lynwood PACE",
         "company": "AltaMed",
         "lat": 33.92732412334932,
         "lng": -118.19785416126253,
@@ -330,7 +395,7 @@ const defaultLocations = [
         "services": ["PACE"]
     },
     {
-        "name": "Montana Admin",
+        "name": "AltaMed Montana Admin",
         "company": "AltaMed",
         "lat": 34.18106710395763,
         "lng": -118.16047489643098,
@@ -341,7 +406,7 @@ const defaultLocations = [
         "services": ["Admin"]
     },
     {
-        "name": "Norwalk PACE",
+        "name": "AltaMed Norwalk PACE",
         "company": "AltaMed",
         "lat": 33.90277719201606,
         "lng": -118.08770656585695,
@@ -352,7 +417,7 @@ const defaultLocations = [
         "services": ["PACE"]
     },
     {
-        "name": "Orange - Chapman",
+        "name": "AltaMed Orange - Chapman",
         "company": "AltaMed",
         "lat": 33.78744927756741,
         "lng": -117.81094551086427,
@@ -363,7 +428,7 @@ const defaultLocations = [
         "services": ["Medical"]
     },
     {
-        "name": "Paramount - Paramount",
+        "name": "AltaMed Paramount - Paramount",
         "company": "AltaMed",
         "lat": 33.89799074074113,
         "lng": -118.15989553928377,
@@ -374,7 +439,7 @@ const defaultLocations = [
         "services": ["Medical"]
     },
     {
-        "name": "Pico Rivera - Passons",
+        "name": "AltaMed Pico Rivera - Passons",
         "company": "AltaMed",
         "lat": 33.98499091126155,
         "lng": -118.0858236551285,
@@ -385,7 +450,7 @@ const defaultLocations = [
         "services": ["Medical"]
     },
     {
-        "name": "Pico Rivera - Washington",
+        "name": "AltaMed Pico Rivera - Washington",
         "company": "AltaMed",
         "lat": 33.978852325740824,
         "lng": -118.08984696865083,
@@ -396,7 +461,7 @@ const defaultLocations = [
         "services": ["Medical", "Dental"]
     },
     {
-        "name": "Pomona PACE",
+        "name": "AltaMed Pomona PACE",
         "company": "AltaMed",
         "lat": 34.089656626965905,
         "lng": -117.75126636028291,
@@ -407,7 +472,7 @@ const defaultLocations = [
         "services": ["PACE"]
     },
     {
-        "name": "Retail Clinic Olympic",
+        "name": "AltaMed Retail Clinic Olympic",
         "company": "AltaMed",
         "lat": 34.05270831135927,
         "lng": -118.28286409378053,
@@ -418,7 +483,7 @@ const defaultLocations = [
         "services": ["Medical"]
     },
     {
-        "name": "Santa Ana Main",
+        "name": "AltaMed Santa Ana Main",
         "company": "AltaMed",
         "lat": 33.75689040084305,
         "lng": -117.86800146102907,
@@ -429,7 +494,7 @@ const defaultLocations = [
         "services": ["Medical", "Dental", "Pharmacy"]
     },
     {
-        "name": "Santa Ana Sunflower",
+        "name": "AltaMed Santa Ana Sunflower",
         "company": "AltaMed",
         "lat": 33.696524,
         "lng": -117.91807,
@@ -440,7 +505,7 @@ const defaultLocations = [
         "services": ["PACE", "Medical"]
     },
     {
-        "name": "South Gate",
+        "name": "AltaMed South Gate",
         "company": "AltaMed",
         "lat": 33.954263,
         "lng": -118.184678,
@@ -451,7 +516,7 @@ const defaultLocations = [
         "services": ["Medical", "Dental", "Pharmacy"]
     },
     {
-        "name": "South LA PACE",
+        "name": "AltaMed South LA PACE",
         "company": "AltaMed",
         "lat": 33.94528244036084,
         "lng": -118.24131667613985,
@@ -462,7 +527,7 @@ const defaultLocations = [
         "services": ["PACE"]
     },
     {
-        "name": "Walnut Park PACE",
+        "name": "AltaMed Walnut Park PACE",
         "company": "AltaMed",
         "lat": 33.970350987317815,
         "lng": -118.23278188705446,
@@ -473,7 +538,7 @@ const defaultLocations = [
         "services": ["PACE", "Medical"]
     },
     {
-        "name": "West Covina - Sunset",
+        "name": "AltaMed West Covina - Sunset",
         "company": "AltaMed",
         "lat": 34.059845946354365,
         "lng": -117.94707834720613,
@@ -484,7 +549,7 @@ const defaultLocations = [
         "services": ["Medical"]
     },
     {
-        "name": "West Covina Amar - Viva Gold",
+        "name": "AltaMed West Covina Amar - Viva Gold",
         "company": "AltaMed",
         "lat": 34.02935791426301,
         "lng": -117.91279435157776,
@@ -495,7 +560,7 @@ const defaultLocations = [
         "services": ["Medical"]
     },
     {
-        "name": "West Covina PACE",
+        "name": "AltaMed West Covina PACE",
         "company": "AltaMed",
         "lat": 34.05898377329629,
         "lng": -117.93521225452425,
@@ -506,7 +571,7 @@ const defaultLocations = [
         "services": ["PACE"]
     },
     {
-        "name": "Westlake & 3rd Street",
+        "name": "AltaMed Westlake & 3rd Street",
         "company": "AltaMed",
         "lat": 34.06245463306585,
         "lng": -118.27342271804811,
