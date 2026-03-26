@@ -1,22 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
-<link rel="icon" type="image/svg+xml" href="icon.svg">
-<link rel="apple-touch-icon" href="icon.svg">
-
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="LexiGlobal">
-
-<style>
-    :root {
-        --sat: env(safe-area-inset-top);
-        --sar: env(safe-area-inset-right);
-        --sab: env(safe-area-inset-bottom);
-        --sal: env(safe-area-inset-left);
-    }
-</style>
+    <link rel="icon" type="image/svg+xml" href="icon.svg">
+    <link rel="apple-touch-icon" href="icon.svg">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="LexiGlobal">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>LexiGlobal Directory</title>
@@ -33,59 +22,41 @@
             --hospital-red: #e74c3c;
         }
         
-    html, body { 
-        height: 100%; 
-        height: 100dvh; 
-        width: 100%; 
-        margin: 0; 
-        padding: 0; 
-        overflow: hidden; 
-        position: fixed; 
-    }
-    body { 
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-        display: flex; 
-        flex-direction: row; 
-    }
-    
-    #sidebar { width: 350px; min-width: 350px; background: #fff; z-index: 9999; display: flex; flex-direction: column; box-shadow: 2px 0 15px rgba(0,0,0,0.1); transition: transform 0.3s ease; }
-    #map-container { flex-grow: 1; position: relative; height: 100%; }
-    #map { height: 100%; width: 100%; background: #f0f0f0; }
+        html, body { height: 100%; width: 100%; margin: 0; padding: 0; overflow: hidden; position: fixed; font-family: -apple-system, system-ui, sans-serif; }
+        body { display: flex; flex-direction: row; }
+        
+        #sidebar { width: 350px; min-width: 350px; background: #fff; z-index: 9999; display: flex; flex-direction: column; box-shadow: 2px 0 15px rgba(0,0,0,0.1); transition: transform 0.3s ease; }
+        #map-container { flex-grow: 1; position: relative; height: 100%; }
+        #map { height: 100%; width: 100%; background: #f0f0f0; }
 
-    @media (max-width: 1024px) {
-        #sidebar { position: absolute; left: 0; top: 0; height: 100%; width: 85%; max-width: 320px; transform: translateX(0); }
-        #sidebar.closed { transform: translateX(-100%); }
-    }
+        @media (max-width: 1024px) {
+            #sidebar { position: absolute; left: 0; top: 0; height: 100%; width: 85%; max-width: 320px; }
+            #sidebar.closed { transform: translateX(-100%); }
+        }
 
-    #filter-section { padding: 15px; background: #f8f9fa; border-bottom: 1px solid #eee; }
-    .filter-row { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 8px; }
-    .filter-chip { display: flex; align-items: center; gap: 4px; font-size: 0.75rem; cursor: pointer; background: white; padding: 6px 10px; border-radius: 20px; border: 1px solid #ddd; }
-    .filter-chip:has(input:checked) { background: var(--lexi-blue); color: white; border-color: var(--lexi-blue); }
-    .filter-chip input { display: none; }
+        /* NEW: Filter Toggle Styling */
+        #filter-drawer { display: none; padding: 15px; background: #f8f9fa; border-bottom: 1px solid #eee; }
+        #filter-drawer.active { display: block; }
+        
+        .filter-row { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 8px; }
+        .filter-chip { display: flex; align-items: center; gap: 4px; font-size: 0.75rem; cursor: pointer; background: white; padding: 6px 10px; border-radius: 20px; border: 1px solid #ddd; }
+        .filter-chip:has(input:checked) { background: var(--lexi-blue); color: white; border-color: var(--lexi-blue); }
+        .filter-chip input { display: none; }
 
-    #search-sticky-section { padding: 15px; background: white; border-bottom: 1px solid #eee; }
-    .search-box { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; box-sizing: border-box; }
+        #search-sticky-section { padding: 15px; background: white; border-bottom: 1px solid #eee; display: flex; gap: 8px; }
+        .search-box { flex-grow: 1; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; }
+        .filter-toggle-btn { padding: 0 15px; background: #f1f2f6; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; font-size: 1.2rem; }
 
-    .content { overflow-y: auto; flex-grow: 1; display: none; }
-    .list-item { padding: 16px; border-bottom: 1px solid #f0f0f0; cursor: pointer; }
-    .list-item:hover { background: #f8f9fb; border-left: 4px solid var(--lexi-blue); }
+        .content { overflow-y: auto; flex-grow: 1; display: block; }
+        .list-item { padding: 16px; border-bottom: 1px solid #f0f0f0; cursor: pointer; transition: 0.2s; }
+        .list-item:hover { background: #f8f9fb; border-left: 4px solid var(--lexi-blue); }
 
-    .custom-pin { display: flex; align-items: center; justify-content: center; border-radius: 50% 50% 50% 0; border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3); color: white; width: 35px; height: 35px; transform: rotate(-45deg); }
-    .pin-content { transform: rotate(45deg); font-size: 1.2rem; }
+        .custom-pin { display: flex; align-items: center; justify-content: center; border-radius: 50% 50% 50% 0; border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3); color: white; width: 35px; height: 35px; transform: rotate(-45deg); }
+        .pin-content { transform: rotate(45deg); font-size: 1.2rem; }
 
-    /* FIXED: Positioned slightly higher and added safe-area-inset */
-    #control-panel { 
-        position: absolute; 
-        bottom: 15px; /* Base lift from the bottom */
-        right: 15px; 
-        z-index: 8000; 
-        display: flex; 
-        flex-direction: column; 
-        gap: 10px; 
-        padding-bottom: env(safe-area-inset-bottom); /* Specifically for iPhone home bar */
-    }
-    .btn { padding: 14px; border: none; border-radius: 12px; font-weight: 700; color: white; box-shadow: 0 6px 15px rgba(0,0,0,0.3); width: 140px; cursor: pointer; }
-</style>
+        #control-panel { position: absolute; bottom: 25px; right: 15px; z-index: 8000; display: flex; flex-direction: column; gap: 10px; padding-bottom: env(safe-area-inset-bottom); }
+        .btn { padding: 14px; border: none; border-radius: 12px; font-weight: 700; color: white; box-shadow: 0 6px 15px rgba(0,0,0,0.3); width: 140px; cursor: pointer; }
+    </style>
 </head>
 <body>
 
@@ -95,16 +66,21 @@
         <span onclick="toggleSidebar()" style="cursor:pointer; font-size:1.5rem;" class="mobile-only">✕</span>
     </div>
 
-    <div id="filter-section">
+    <div id="search-sticky-section">
+        <input type="text" id="site-search" class="search-box" placeholder="Search..." onkeyup="updateMap()">
+        <button class="filter-toggle-btn" onclick="toggleFilters()" title="Filter Categories">⌥</button>
+    </div>
+
+    <div id="filter-drawer">
         <small style="font-weight:bold; display:block; margin-bottom:8px;">MAIN DIRECTORIES</small>
         <div class="filter-row">
-            <label class="filter-chip"><input type="checkbox" class="company-filter" value="AltaMed" onchange="toggleFilterState()"> AltaMed</label>
-            <label class="filter-chip"><input type="checkbox" class="company-filter" value="Pickup/Deliveries" onchange="toggleFilterState()"> Pickup/Deliveries</label>
-            <label class="filter-chip"><input type="checkbox" class="company-filter" value="East Valley" onchange="toggleFilterState()"> East Valley</label>
-            <label class="filter-chip"><input type="checkbox" class="company-filter" value="San Antonio Regional Hospital" onchange="toggleFilterState()"> San Antonio</label>
+            <label class="filter-chip"><input type="checkbox" class="company-filter" value="AltaMed" checked onchange="toggleFilterState()"> AltaMed</label>
+            <label class="filter-chip"><input type="checkbox" class="company-filter" value="Pickup/Deliveries" checked onchange="toggleFilterState()"> Pickup/Deliveries</label>
+            <label class="filter-chip"><input type="checkbox" class="company-filter" value="East Valley" checked onchange="toggleFilterState()"> East Valley</label>
+            <label class="filter-chip"><input type="checkbox" class="company-filter" value="San Antonio Regional Hospital" checked onchange="toggleFilterState()"> San Antonio</label>
         </div>
 
-        <div id="altamed-sub-section" style="display:none; margin-top:15px; padding-top:10px; border-top:1px dashed #ccc;">
+        <div id="altamed-sub-section" style="margin-top:15px; padding-top:10px; border-top:1px dashed #ccc;">
             <small style="color:var(--lexi-turquoise); font-weight:bold; display:block; margin-bottom:8px;">ALTAMED CATEGORIES</small>
             <div class="filter-row">
                 <label class="filter-chip"><input type="checkbox" class="cat-filter" value="Medical" checked onchange="updateMap()"> Medical</label>
@@ -114,11 +90,7 @@
         </div>
     </div>
 
-    <div id="search-sticky-section">
-        <input type="text" id="site-search" class="search-box" placeholder="Search..." onkeyup="updateMap()">
-    </div>
-
-    <div class="content" id="sidebar-list">
+    <div class="content">
         <div id="location-list"></div>
     </div>
 </div>
@@ -143,14 +115,14 @@
     const satLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}');
     const map = L.map('map', { zoomControl: false, layers: [streetLayer] }).setView([34.0522, -118.2437], 10);
 
-    map.on('mousedown', function() {
-        if (window.innerWidth <= 1024) {
-            document.getElementById('sidebar').classList.add('closed');
-        }
-    });
-
     function toggleSidebar() {
         document.getElementById('sidebar').classList.toggle('closed');
+        setTimeout(() => map.invalidateSize(), 300);
+    }
+
+    function toggleFilters() {
+        const drawer = document.getElementById('filter-drawer');
+        drawer.classList.toggle('active');
     }
 
     function getCustomIcon(loc) {
@@ -173,7 +145,6 @@
     function toggleFilterState() {
         const checkedCompanies = Array.from(document.querySelectorAll('.company-filter:checked')).map(cb => cb.value);
         document.getElementById('altamed-sub-section').style.display = checkedCompanies.includes("AltaMed") ? 'block' : 'none';
-        document.getElementById('sidebar-list').style.display = checkedCompanies.length > 0 ? 'block' : 'none';
         updateMap();
     }
 
@@ -183,12 +154,10 @@
         const currentTime = now.getHours() * 100 + now.getMinutes();
         const [openH, openM] = openTime.split(':').map(Number);
         const [closeH, closeM] = closeTime.split(':').map(Number);
-        const openVal = openH * 100 + openM;
-        const closeVal = closeH * 100 + closeM;
-        const isOpen = currentTime >= openVal && currentTime < closeVal;
+        const isOpen = currentTime >= (openH * 100 + openM) && currentTime < (closeH * 100 + closeM);
         return isOpen ? 
-            `<span style="color:var(--lexi-turquoise); font-weight:bold;">● Open</span> <span style="font-size:0.8em; color:#666;">(Closes ${closeTime})</span>` : 
-            `<span style="color:var(--hospital-red); font-weight:bold;">○ Closed</span> <span style="font-size:0.8em; color:#666;">(Opens ${openTime})</span>`;
+            `<span style="color:var(--lexi-turquoise); font-weight:bold;">● Open</span>` : 
+            `<span style="color:var(--hospital-red); font-weight:bold;">○ Closed</span>`;
     }
 
     function updateMap() {
@@ -196,11 +165,12 @@
         markers = [];
         const listContainer = document.getElementById('location-list');
         listContainer.innerHTML = '';
+        
         const searchQuery = document.getElementById('site-search').value.toLowerCase();
         const checkedCompanies = Array.from(document.querySelectorAll('.company-filter:checked')).map(cb => cb.value);
         const checkedCats = Array.from(document.querySelectorAll('.cat-filter:checked')).map(cb => cb.value);
 
-        if (checkedCompanies.length === 0 || typeof defaultLocations === 'undefined') return;
+        if (typeof defaultLocations === 'undefined') return;
 
         let filtered = defaultLocations.filter(loc => {
             const matchesCompany = checkedCompanies.includes(loc.company);
@@ -216,38 +186,30 @@
         filtered.forEach(loc => {
             const statusHtml = getOpenStatus(loc.open, loc.close);
             const dist = userLatLng ? (map.distance(userLatLng, [loc.lat, loc.lng]) * 0.000621371).toFixed(1) + " mi" : "";
-            const servicesText = loc.services ? loc.services.join(', ') : '';
-
-            // 1. Map Marker & Popup
-            const m = L.marker([loc.lat, loc.lng], { icon: getCustomIcon(loc) }).addTo(map);
             
+            const m = L.marker([loc.lat, loc.lng], { icon: getCustomIcon(loc) }).addTo(map);
             m.bindPopup(`
-                <div style="font-family: sans-serif; min-width:200px; padding:5px;">
-                    <strong style="font-size:1.1em; color:var(--lexi-blue);">${loc.name}</strong><br>
-                    <div style="font-size:0.85em; font-weight:bold; color:#444; margin-bottom:4px;">${loc.cat} ${servicesText ? '• ' + servicesText : ''}</div>
-                    <div style="margin: 4px 0;">${statusHtml}</div>
-                    <div style="color:#666; margin-bottom:8px; font-size:0.9em;">${loc.addr}</div>
-                    <hr style="border:0; border-top:1px solid #eee; margin:10px 0;">
+                <div style="font-family: sans-serif; min-width:200px;">
+                    <strong style="color:var(--lexi-blue);">${loc.name}</strong><br>
+                    <div style="font-size:0.85em; margin:4px 0;">${statusHtml} • ${loc.cat}</div>
+                    <div style="color:#666; font-size:0.9em; margin-bottom:10px;">${loc.addr}</div>
                     <a href="https://www.google.com/maps/dir/?api=1&destination=${loc.lat},${loc.lng}" 
-                       target="_blank" 
-                       style="display:block; text-align:center; background:var(--lexi-blue); color:white; padding:10px; border-radius:8px; text-decoration:none; font-weight:bold; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-                       🚗 Get Directions ${dist ? '('+dist+')' : ''}
+                       target="_blank" style="display:block; text-align:center; background:var(--lexi-blue); color:white; padding:10px; border-radius:8px; text-decoration:none; font-weight:bold;">
+                       🚗 Directions ${dist ? '('+dist+')' : ''}
                     </a>
                 </div>
             `);
             markers.push(m);
 
-            // 2. Sidebar List Item
             const div = document.createElement('div');
             div.className = 'list-item';
             div.innerHTML = `
-                <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                <div style="display:flex; justify-content:space-between;">
                     <strong style="color:var(--lexi-blue);">${loc.name}</strong>
-                    <span style="font-size:0.8em; color:var(--lexi-blue); font-weight:bold;">${dist}</span>
+                    <span style="font-size:0.8em; font-weight:bold;">${dist}</span>
                 </div>
-                <div style="font-size:0.75em; font-weight:bold; color:#555; margin: 2px 0;">${loc.cat} ${servicesText ? '• ' + servicesText : ''}</div>
-                <small style="color:#666;">${loc.addr}</small><br>
-                <div style="margin-top:4px;">${statusHtml}</div>
+                <div style="font-size:0.75em; color:#555;">${loc.cat} | ${statusHtml}</div>
+                <small style="color:#666;">${loc.addr}</small>
             `;
             div.onclick = () => {
                 map.flyTo([loc.lat, loc.lng], 15);
@@ -259,15 +221,11 @@
     }
 
     function resetLocations() {
-        if(confirm("Clear cache and reset data?")) {
-            localStorage.removeItem('altamed_locations');
-            location.reload();
-        }
+        if(confirm("Reset map view?")) location.reload();
     }
 
     function toggleSatellite() {
-        if (map.hasLayer(streetLayer)) { map.removeLayer(streetLayer); map.addLayer(satLayer); }
-        else { map.removeLayer(satLayer); map.addLayer(streetLayer); }
+        map.hasLayer(streetLayer) ? (map.removeLayer(streetLayer), map.addLayer(satLayer)) : (map.removeLayer(satLayer), map.addLayer(streetLayer));
     }
 
     function locateUser() {
@@ -275,7 +233,7 @@
         map.on('locationfound', (e) => { userLatLng = e.latlng; updateMap(); });
     }
 
-    window.onload = toggleFilterState;
+    window.onload = updateMap;
 </script>
 </body>
 </html>
